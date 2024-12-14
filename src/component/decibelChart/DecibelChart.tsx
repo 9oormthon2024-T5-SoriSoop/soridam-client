@@ -2,14 +2,28 @@ import React, { useEffect, useState } from 'react';
 import useRecordWithDecibel from '../../hook/useRecordWithDecibel';
 import { Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
-import { DateWrapper } from './DecibelChart.styles';
+import { AverageDecibelWrapper, ChartBtn, ChartContainer, ChartWrapper, CurrentDecibelWrapper, DateAndPositionContainer, DateWrapper, DecibelContainer, InfoWrapper, MarkerWrapper, MaxDecibelWrapper, PositionWrapper } from './DecibelChart.styles';
+import MarkerDefault from '../../assets/icons/ico_marker_default.png';
+import MarkerGreen from '../../assets/icons/ico_marker_green.png';
+import MarkerBlue from '../../assets/icons/ico_marker_blue.png';
+import MarkerRed from '../../assets/icons/ico_marker_red.png';
+import LocateIcon from '../../assets/icons/ico_locate.png';
 
 Chart.register(...registerables);
 
-const DecibelMeter = () => {
+interface DecibelDataPoint {
+    x: string;
+    y: number;
+}
+
+interface DecibelMeterProps {
+    address: string; // address를 props로 받음
+}
+
+const DecibelMeter: React.FC<DecibelMeterProps> = ({address}) => {
     const { startMeasuringDecibel, stopMeasuringDecibel, decibel } = useRecordWithDecibel();
     const [isRecording, setIsRecording] = useState(false);
-    const [dataPoints, setDataPoints] = useState<{ x: string, y: number }[]>([]); // Change to store time and decibel
+    const [dataPoints, setDataPoints] = useState<DecibelDataPoint[]>([]); // Change to store time and decibel
     const [averageDecibel, setAverageDecibel] = useState<number>(0);
     const [maxDecibel, setMaxDecibel] = useState<number>(0); 
     const [currentTime, setCurrentTime] = useState<string>("");
@@ -47,8 +61,7 @@ const DecibelMeter = () => {
         const day = String(date.getDate()).padStart(2, "0");
         const hours = String(date.getHours()).padStart(2, "0");
         const minutes = String(date.getMinutes()).padStart(2, "0");
-        const seconds = String(date.getSeconds()).padStart(2, "0");  // 초 추가
-        return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;  // 초 포함
+        return `${year}.${month}.${day} ${hours}:${minutes}`;  // 초 포함
     };
 
   const handleToggleRecording = () => {
@@ -89,7 +102,7 @@ const DecibelMeter = () => {
                 label: 'Decibel Level (dB)',
                 data: dataPoints,
                 backgroundColor: 'rgba(75,192,192,0.4)',
-                borderColor: 'rgba(75,192,192,1)',
+                borderColor: '#007bff',
                 borderWidth: 1,
             },
         ],
@@ -125,22 +138,53 @@ const DecibelMeter = () => {
                 display: false, // 범례 표시 여부
             }
         }
-  };
+    };
+
+    
 
   return (
-    <div className="App">
-      <h2>Decibel Meter</h2>
-      <button onClick={handleToggleRecording}>
-        {isRecording ? 'Stop Recording' : 'Start Recording'}
-      </button>
-      <p>Current Decibel: {decibel.toFixed(0)} dB</p>
-      <p>Average Decibel: {averageDecibel.toFixed(0)} dB</p>
-      <p>Max Decibel: {maxDecibel.toFixed(0)} dB</p>
-      <DateWrapper>
-        {fixedTime ? `Fixed Time: ${fixedTime}` : `Current Time: ${currentTime}`}
-      </DateWrapper>
-      <Line data={chartData} options={options} />
-    </div>
+    <ChartContainer>
+        <ChartWrapper>
+            <DateAndPositionContainer>
+                <DateWrapper>
+                    {fixedTime ? `${fixedTime}` : `${currentTime}`}
+                </DateWrapper>
+                <PositionWrapper>
+                    <img src={LocateIcon} alt='positionMarker' />
+                    {address}
+                </PositionWrapper>
+            </DateAndPositionContainer>
+            <MarkerWrapper>
+                { isRecording && averageDecibel < 70 ? <img src={MarkerGreen} alt='marker' /> 
+                    : isRecording && averageDecibel < 100 ? <img src={MarkerBlue} alt='marker' /> 
+                        : isRecording && averageDecibel < 120 ? <img src={MarkerRed} alt='marker'/> 
+                            : <img src={MarkerDefault} alt='marker' /> }
+            </MarkerWrapper>
+            <DecibelContainer>
+                <AverageDecibelWrapper>
+                    <p>평균</p>
+                    <p>{averageDecibel.toFixed(0)}</p>
+                </AverageDecibelWrapper>
+                <CurrentDecibelWrapper>
+                    <p>측정전</p>
+                    <p>현재 {decibel.toFixed(0)}dB</p>
+                </CurrentDecibelWrapper>
+                <MaxDecibelWrapper>
+                    <p>최대</p>
+                    <p>{maxDecibel.toFixed(0)}</p>
+                </MaxDecibelWrapper>
+            </DecibelContainer>
+            <Line data={chartData} options={options} style={{ width: '100%', height: '172px' }}  />
+            <InfoWrapper>
+                <p>소음 측정을 시작할 준비가 됐어요</p>
+                <p>평균값을 얻으려면 15초 동안 측정해볼게요</p>
+            </InfoWrapper>
+        </ChartWrapper>
+        <ChartBtn onClick={handleToggleRecording}>
+            {isRecording ? 'Stop Recording' : '측정시작'}
+        </ChartBtn>
+    </ChartContainer>
+    
   );
 };
 
