@@ -1,23 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import NoiseList from "../../component/noiseList/NoiseList"; // NoiseList 컴포넌트 경로
 
 import emailIcon from "../../assets/icons/ico_login_email.png";
 import passwordIcon from "../../assets/icons/ico_login_password.png";
 
 const Login = () => {
-  const [showNoiseList, setShowNoiseList] = useState(false); // NoiseList 화면 표시 여부
-
-  const handleShowNoiseList = () => {
-    setShowNoiseList(true); // 버튼 클릭 시 NoiseList 화면으로 전환
-  };
-
-  // NoiseList 화면이 표시되면 해당 컴포넌트 렌더링
-  if (showNoiseList) {
-    return <NoiseList />;
-  }
-
-  // 기본 로그인 화면
   return (
     <Container>
       <LogoContainer>
@@ -25,18 +12,14 @@ const Login = () => {
       </LogoContainer>
       <Form>
         <InputWrapper>
-          <Icon src={emailIcon} alt="이메일 아이콘" />
-          <Input type="text" placeholder="ID" />
+            <Icon src={emailIcon} alt="이메일 아이콘" />
+            <Input type="text" placeholder="ID" />
         </InputWrapper>
         <InputWrapper>
-          <Icon src={passwordIcon} alt="비밀번호 아이콘" />
-          <Input type="password" placeholder="password" />
+            <Icon src={passwordIcon} alt="비밀번호 아이콘" />
+            <Input type="password" placeholder="password" />
         </InputWrapper>
         <LoginButton>로그인</LoginButton>
-        {/* NoiseList 화면 전환 버튼 추가 */}
-        <NoiseListButton onClick={handleShowNoiseList}>
-          Noise List 보기
-        </NoiseListButton>
       </Form>
       <Links>
         <Link href="#">아이디 찾기</Link>
@@ -88,12 +71,12 @@ const Form = styled.div`
 `;
 
 const InputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  background-color: #f7f7f7;
-  border: none;
+  display: flex; /* 가로 정렬 */
+  align-items: center; /* 세로 정렬 */
+  background-color: #f7f7f7; /* 배경색 추가 */
+  border: none; /* 테두리 제거 */
   border-radius: 8px;
-  padding: 10px;
+  padding: 10px; /* 내부 여백 */
   margin-bottom: 20px;
 `;
 
@@ -105,11 +88,11 @@ const Icon = styled.img`
 
 const Input = styled.input`
   flex: 1;
-  border: none;
-  outline: none;
+  border: none; /* 기본 테두리 제거 */
+  outline: none; /* 포커스 시 생기는 파란색 테두리 제거 */
   font-size: 14px;
-  background-color: #f7f7f7;
-  color: #333;
+  background-color: #f7f7f7; /* Input 배경색을 InputWrapper와 동일하게 설정 */
+  color: #333; /* 입력 텍스트 색상 */
   &::placeholder {
     color: #aaaaaa;
   }
@@ -129,24 +112,6 @@ const LoginButton = styled.button`
 
   &:hover {
     background-color: #0056b3;
-  }
-`;
-
-const NoiseListButton = styled.button`
-  width: 100%;
-  padding: 15px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #1e7e34;
   }
 `;
 
