@@ -4,6 +4,10 @@ import { Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import { DateWrapper } from './DecibelChart.styles';
 
+import NoiseStandard from '../standard/NoiseStandard.tsx'; 
+import styled from "styled-components";
+
+
 Chart.register(...registerables);
 
 const DecibelMeter = () => {
@@ -13,6 +17,7 @@ const DecibelMeter = () => {
     const [averageDecibel, setAverageDecibel] = useState<number>(0); // 평균 데시벨 상태 추가
     const [currentTime, setCurrentTime] = useState<string>("");
     const [fixedTime, setFixedTime] = useState<string | null>(null);
+    const [test ,setTest ] = useState<boolean>(false);
     
       // 현재 시간을 업데이트
       useEffect(() => {
@@ -123,8 +128,27 @@ const DecibelMeter = () => {
         <p>{fixedTime || currentTime}</p>
       </DateWrapper>
       <Line data={chartData} options={options} />
+      <button onClick={() => setTest(!test)}>test</button>
+      {test && (
+      <Overlay>
+        <NoiseStandard onClose={() => setTest(false)} />
+      </Overlay>
+    )}
     </div>
   );
 };
+// 추가된 Overlay 스타일
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+`;
 
 export default DecibelMeter;
