@@ -1,29 +1,34 @@
 import React from "react";
 import styled from "styled-components";
 
+// 상대 경로로 아이콘 import
+import GreenIcon from "../../assets/icons/ico_marker_green.png";
+import BlueIcon from "../../assets/icons/ico_marker_blue.png";
+import RedIcon from "../../assets/icons/ico_marker_red.png";
+
 const MeasureInfoPopup = ({ onClose }: { onClose: () => void }) => {
   return (
     <PopupContainer>
-      <PopupRow>
-        <Icon color="green" />
-        <TextWrapper>
+      <PopupRow themeColor="#e3fceb">
+        <RowWrapper>
+          <Icon src={GreenIcon} alt="Green Marker" />
           <Level>0~70dB</Level>
-          <Description>전화벨 수준으로, 일상 생활에 영향이 없습니다.</Description>
-        </TextWrapper>
+        </RowWrapper>
+        <Description>전화벨 수준으로, 일상 생활에 영향이 없습니다.</Description>
       </PopupRow>
-      <PopupRow>
-        <Icon color="blue" />
-        <TextWrapper>
+      <PopupRow themeColor="#e3f0fe">
+        <RowWrapper>
+          <Icon src={BlueIcon} alt="Blue Marker" />
           <Level>70~100dB</Level>
-          <Description>자동차 경적 수준. 잠시라도 노출 시 주의가 필요합니다.</Description>
-        </TextWrapper>
+        </RowWrapper>
+        <Description>자동차 경적 수준. 잠시라도 노출 시 주의가 필요합니다.</Description>
       </PopupRow>
-      <PopupRow>
-        <Icon color="red" />
-        <TextWrapper>
+      <PopupRow themeColor="#fde3e3">
+        <RowWrapper>
+          <Icon src={RedIcon} alt="Red Marker" />
           <Level>100~120dB</Level>
-          <Description>항공기 이륙 수준. 짧은 시간 노출도 위험합니다.</Description>
-        </TextWrapper>
+        </RowWrapper>
+        <Description>항공기 이륙 수준. 짧은 시간 노출도 위험합니다.</Description>
       </PopupRow>
       <PopupButton onClick={onClose}>확인했어요</PopupButton>
     </PopupContainer>
@@ -32,7 +37,7 @@ const MeasureInfoPopup = ({ onClose }: { onClose: () => void }) => {
 
 export default MeasureInfoPopup;
 
-// Styled Components (PopupContainer 등은 기존 코드와 동일)
+// Styled Components
 const PopupContainer = styled.div`
   position: fixed;
   top: 50%;
@@ -47,26 +52,27 @@ const PopupContainer = styled.div`
   z-index: 1000;
 `;
 
-const PopupRow = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
+const PopupRow = styled.div<{ themeColor: string }>`
+  margin-bottom: 20px;
 
   &:last-child {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
 `;
 
-const Icon = styled.div<{ color: string }>`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: ${({ color }) => color};
-  margin-right: 10px;
+const RowWrapper = styled.div<{ themeColor?: string }>`
+  display: flex;
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
+  background-color: ${({ themeColor }) => themeColor || "#E8F0FF"};
+  padding: 10px;
+  border-radius: 8px;
 `;
 
-const TextWrapper = styled.div`
-  flex: 1;
+const Icon = styled.img`
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
 `;
 
 const Level = styled.div`
@@ -78,7 +84,8 @@ const Level = styled.div`
 const Description = styled.div`
   font-size: 12px;
   color: #666;
-  margin-top: 4px;
+  margin-top: 8px;
+  text-align: center; /* 설명 텍스트도 가운데 정렬 */
 `;
 
 const PopupButton = styled.button`
