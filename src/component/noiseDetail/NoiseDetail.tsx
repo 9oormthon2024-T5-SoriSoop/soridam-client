@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 interface NoiseDetailProps {
   noise: {
     id: number;
-    x: number;
-    y: number;
+    x: number; // 경도
+    y: number; // 위도
     avgDecibel: number;
     maxDecibel: number;
     createdAt: string;
@@ -15,7 +15,6 @@ interface NoiseDetailProps {
 }
 
 const NoiseDetail: React.FC<NoiseDetailProps> = ({ noise, onBack }) => {
-  const [address, setAddress] = useState<string>("");
   const styles = {
     container: {
       padding: "16px",
@@ -55,48 +54,49 @@ const NoiseDetail: React.FC<NoiseDetailProps> = ({ noise, onBack }) => {
     },
   };
 
-  const REST_API_KEY = "83ce629a6d7b809e79dc0b269d5a78c9"; // REST API Key
-
   useEffect(() => {
-    const fetchAddress = async () => {
-      const url = `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${noise.x}&y=${noise.y}`;
+    const loadKakaoMap = () => {
+      const { kakao } = window as any;
 
-      try {
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `KakaoAK ${REST_API_KEY}`,
-          },
-        });
+      const container = document.getElementById("map");
+      const options = {
+        center: new kakao.maps.LatLng(noise.y, noise.x),
+        level: 3,
+      };
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+      const map = new kakao.maps.Map(container, options);
 
-        const data = await response.json();
-        if (data.documents && data.documents.length > 0) {
-          setAddress(data.documents[0].address_name);
-        } else {
-          setAddress("알 수 없는 위치");
-        }
-      } catch (error) {
-        console.error("주소 변환 API 호출 중 오류 발생:", error);
-        setAddress("주소를 가져올 수 없습니다.");
-      }
+      const marker = new kakao.maps.Marker({
+        position: new kakao.maps.LatLng(noise.y, noise.x),
+        map: map,
+      });
+
+      const infowindow = new kakao.maps.InfoWindow({
+        content: `<div style="padding:5px; font-size:12px;">${noise.locationName || "알 수 없는 위치"}</div>`,
+      });
+      infowindow.open(map, marker);
     };
 
-    fetchAddress();
-  }, [noise.x, noise.y]);
+    const script = document.createElement("script");
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=474943ecc6f14c17466a22ee39f0c57f&libraries=services`;
+    script.async = true;
+
+    script.onload = () => loadKakaoMap();
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [noise.x, noise.y, noise.locationName]);
 
   return (
     <div style={styles.container}>
       <button style={styles.backButton} onClick={onBack}>
         뒤로가기
       </button>
-      <div id="map" style={styles.map}>
-        <p>{address || "지도 로딩 중..."}</p>
-      </div>
+      <div id="map" style={styles.map}></div>
       <div style={styles.infoBox}>
-        <h1 style={styles.header}>{noise.locationName || address}</h1>
+        <h1 style={styles.header}>{noise.locationName || "알 수 없는 위치"}</h1>
         <p>생성일: {noise.createdAt}</p>
         <p>평균 데시벨: {noise.avgDecibel} dB</p>
         <p>최대 데시벨: {noise.maxDecibel} dB</p>
