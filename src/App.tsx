@@ -13,7 +13,7 @@ function AppContent() {
     <Fragment>
       <Routes>
         <Route path='/login' element={<Login />} />
-        <Route path='/' element={<Noise />} />
+        <Route path='/measure' element={<Noise />} />
       </Routes>
       {location.pathname !== '/login' && <NavBar />}
     </Fragment>

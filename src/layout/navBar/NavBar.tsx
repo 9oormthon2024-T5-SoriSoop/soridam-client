@@ -13,23 +13,23 @@ import { toggleMenu } from '../../store/menu/menuSlice';
 const NavBar = () => {
     const dispatch = useDispatch();
 
-    const isMapActive = useMatch("/map");
-    const isMeasureActive = useMatch("/");
+    const isMapActive = useMatch("/");
+    const isMeasureActive = useMatch("/measure");
     const isSaveActive = useMatch("/save");
 
     return (
         <NavWrapper>
             <ItemBox>
-                <li onClick={() => dispatch(toggleMenu(false))}>
+            <li onClick={() => dispatch(toggleMenu(false))}>
                     <NavLink 
-                        to={"/map"} 
+                        to={"/measure"} 
                         className={({ isActive }) => isActive ? "active-item" : "inactive-item"}
                     >
                         <div>
-                            <img src={isMapActive ? ActiveMap : InactiveMap } alt='map'/>
+                            <img src={ isMeasureActive ? ActiveMeasure : InactiveMeasure} alt='measure'/>
                         </div>
                         <div>
-                           소음 지도
+                            소음 측정
                         </div>
                     </NavLink>
                 </li>
@@ -39,10 +39,10 @@ const NavBar = () => {
                         className={({ isActive }) => isActive ? "active-item" : "inactive-item"}
                     >
                         <div>
-                            <img src={ isMeasureActive ? ActiveMeasure : InactiveMeasure} alt='measure'/>
+                            <img src={isMapActive ? ActiveMap : InactiveMap } alt='map'/>
                         </div>
                         <div>
-                            소음 측정
+                           소음 지도
                         </div>
                     </NavLink>
                 </li>
