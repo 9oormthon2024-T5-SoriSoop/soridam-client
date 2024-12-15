@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const useRecordWithDecibel = () => {
     const [decibel, setDecibel] = useState<number>(0);
@@ -39,9 +39,20 @@ const useRecordWithDecibel = () => {
       setDecibel(Number(decibel.toFixed(2)));
   
       animationFrameId.current = requestAnimationFrame(updateDecibel);
-      return console.log(decibel);
+      return;
     };
   
+    // Cleanup the media stream when the component is unmounted
+  useEffect(() => {
+    return () => {
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
   
     return { startMeasuringDecibel, stopMeasuringDecibel, decibel };
 };

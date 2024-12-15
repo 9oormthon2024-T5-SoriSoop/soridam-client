@@ -13,6 +13,14 @@ const ApiService = {
         });
       },
 
+    getUserNoises(userId) {
+        return axios.get(`${API_BASE_URL}/users/${userId}`, {
+          headers: {
+            'ngrok-skip-browser-warning': '69420',
+          },
+        });
+      },
+
     ceateNoise() {
         return axios.post(`${API_BASE_URL}/noises`);
     },

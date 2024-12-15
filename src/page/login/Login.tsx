@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import emailIcon from "../../assets/icons/ico_login_email.png";
 import passwordIcon from "../../assets/icons/ico_login_password.png";
+import { NavLink } from "react-router-dom";
 
 const Login = () => {
   return (
@@ -19,7 +20,9 @@ const Login = () => {
             <Icon src={passwordIcon} alt="비밀번호 아이콘" />
             <Input type="password" placeholder="password" />
         </InputWrapper>
-        <LoginButton>로그인</LoginButton>
+        <NavLink to={'/measure'}>
+          <LoginButton>로그인</LoginButton>
+        </NavLink>
       </Form>
       <Links>
         <Link href="#">아이디 찾기</Link>
