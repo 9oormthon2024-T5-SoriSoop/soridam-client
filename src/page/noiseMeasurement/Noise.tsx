@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import DecibelChart from '../../component/decibelChart/DecibelChart';
+import { useDispatch } from 'react-redux';
+import { setPosition } from '../../store/data/dataSlice';
 
 const Noise = () => {
   const [address, setAddress] = useState<string>('');
-  
+  const dispatch = useDispatch();
+
   const fetchAddressFromCoords = () => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
         console.log('위도:', latitude, '경도:', longitude);
+        dispatch(setPosition({x: latitude, y: longitude}));
 
         const REST_API_KEY = '83ce629a6d7b809e79dc0b269d5a78c9'; // 카카오 REST API 키
         const url = `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${longitude}&y=${latitude}`;

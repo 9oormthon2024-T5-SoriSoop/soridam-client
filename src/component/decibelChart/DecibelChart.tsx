@@ -2,12 +2,17 @@ import React, { useEffect, useState } from 'react';
 import useRecordWithDecibel from '../../hook/useRecordWithDecibel';
 import { Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
-import { AverageDecibelWrapper, ChartBtn, ChartContainer, ChartWrapper, CurrentDecibelWrapper, DateAndPositionContainer, DateWrapper, DecibelContainer, InfoWrapper, MarkerWrapper, MaxDecibelWrapper, PositionWrapper } from './DecibelChart.styles';
+import { AverageDecibelWrapper, CancelBtn, ChartBtn, ChartContainer, ChartWrapper, CurrentDecibelWrapper, DateAndPositionContainer, DateWrapper, DecibelContainer, Header, InfoWrapper, MarkerWrapper, MaxDecibelWrapper, PositionWrapper, SaveBtn } from './DecibelChart.styles';
 import MarkerDefault from '../../assets/icons/ico_marker_default.png';
 import MarkerGreen from '../../assets/icons/ico_marker_green.png';
 import MarkerBlue from '../../assets/icons/ico_marker_blue.png';
 import MarkerRed from '../../assets/icons/ico_marker_red.png';
 import LocateIcon from '../../assets/icons/ico_locate.png';
+import Logo from '../../assets/logo/logo.png';
+import Info from '../../assets/icons/ico_Info.png';
+import { NavLink } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setDecibel } from '../../store/data/dataSlice';
 
 Chart.register(...registerables);
 
@@ -29,6 +34,8 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({address}) => {
     const [currentTime, setCurrentTime] = useState<string>("");
     const [fixedTime, setFixedTime] = useState<string | null>(null);
     const [isTimeFixed, setIsTimeFixed] = useState<boolean>(false); // 시간이 고정되었는지 여부
+
+    const dispatch = useDispatch();
 
     // 실시간 시간을 업데이트하는 useEffect
     useEffect(() => {
@@ -144,6 +151,14 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({address}) => {
 
   return (
     <ChartContainer>
+        <Header>
+            <div>
+                <img src={Logo} alt='logo' />
+            </div>
+            <div>
+                <img src={Info} alt='info' />
+            </div>            
+        </Header>
         <ChartWrapper>
             <DateAndPositionContainer>
                 <DateWrapper>
@@ -166,7 +181,12 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({address}) => {
                     <p>{averageDecibel.toFixed(0)}</p>
                 </AverageDecibelWrapper>
                 <CurrentDecibelWrapper>
-                    <p>측정전</p>
+                    <p>
+                    { isRecording && averageDecibel < 70 ? "조용함" 
+                    : isRecording && averageDecibel < 100 ? "보통" 
+                        : isRecording && averageDecibel < 120 ? "시끄러움" 
+                            : "측정 전" }  
+                    </p>
                     <p>현재 {decibel.toFixed(0)}dB</p>
                 </CurrentDecibelWrapper>
                 <MaxDecibelWrapper>
@@ -177,12 +197,26 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({address}) => {
             <Line data={chartData} options={options} style={{ width: '100%', height: '172px' }}  />
             <InfoWrapper>
                 <p>소음 측정을 시작할 준비가 됐어요</p>
-                <p>평균값을 얻으려면 15초 동안 측정해볼게요</p>
+                <p>잠시만 기다려주세요. 평균값을 계산 중입니다.</p>
             </InfoWrapper>
         </ChartWrapper>
-        <ChartBtn onClick={handleToggleRecording}>
-            {isRecording ? 'Stop Recording' : '측정시작'}
-        </ChartBtn>
+        {isRecording ? (
+                <>
+                    <NavLink to='/register'>
+                        <SaveBtn onClick={()=>{dispatch(setDecibel({maxdB: maxDecibel.toFixed(0), averagedB: averageDecibel.toFixed(0), date: fixedTime }))}}>
+                            측정 저장
+                        </SaveBtn>
+                    </NavLink>
+                    <CancelBtn onClick={handleToggleRecording}>
+                        취소
+                    </CancelBtn>
+                </>
+            ) : (
+                <ChartBtn onClick={handleToggleRecording}>
+                    측정 시작
+                </ChartBtn>
+            )
+        }
     </ChartContainer>
     
   );

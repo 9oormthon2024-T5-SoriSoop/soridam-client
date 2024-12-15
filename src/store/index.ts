@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import menuReducer from './menu/menuSlice';
+import dataReducer from './data/dataSlice';
 
 // 각각의 reducer를 가져와 store에 저장한다.
 export const store = configureStore({
     reducer: {
-        menu: menuReducer
+        menu: menuReducer,
+        data: dataReducer
     }
 })
 

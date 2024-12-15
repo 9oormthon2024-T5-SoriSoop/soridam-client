@@ -1,5 +1,20 @@
 import styled from "styled-components";
 
+export const Header = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 24px;
+    margin: 31px 18px 32px 18px;
+    div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+`
+
+
 export const ChartWrapper = styled.div`
     width: 340px;
     height: 444px;
@@ -112,6 +127,36 @@ export const ChartBtn = styled.button`
     cursor: pointer;
 `
 
+export const SaveBtn = styled.button`
+    width: 340px;
+    height: 50px;
+    background-color: #007BFF;
+    color: #ffffff;
+    font-family: 'Pretendard';
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 20px;
+    border: none;
+    border-radius: 58px;
+    margin: 18px 18px 9px 17px;
+    cursor: pointer;
+`
+
+export const CancelBtn = styled.button`
+    width: 340px;
+    height: 50px;
+    background-color: transparent;
+    color: #808080;
+    font-family: 'Pretendard';
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 27px;
+    border: none;
+    border-radius: 58px;
+    margin: 9px 18px 21px 17px;
+    cursor: pointer;
+`
+
 export const ChartContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -124,7 +169,7 @@ export const InfoWrapper = styled.div`
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
-    padding: 26px 30px 13px 30px;
+    padding: 26px 26px 13px 26px;
     color: #6D6D6D;
     display: flex;
     flex-direction: column;
