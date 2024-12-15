@@ -80,6 +80,9 @@ const NoiseList: React.FC = () => {
   if (error) return <div>{error}</div>;
 
   const styles = {
+    container: {
+        padding: '0 2px',
+    },
     card: {
       display: "flex",
       flexDirection: "row" as const,
@@ -160,7 +163,7 @@ const NoiseList: React.FC = () => {
 
   // NoiseList 렌더링
   return (
-    <div>
+    <div style={styles.container}>
       {noiseList.map((noise) => (
         <div key={noise.id} style={styles.card}>
           <img

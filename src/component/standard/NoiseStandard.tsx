@@ -5,37 +5,52 @@ import styled from "styled-components";
 import GreenIcon from "../../assets/icons/ico_marker_green.png";
 import BlueIcon from "../../assets/icons/ico_marker_blue.png";
 import RedIcon from "../../assets/icons/ico_marker_red.png";
+import { useDispatch } from "react-redux";
+import { toggleModal } from "../../store/menu/menuSlice";
 
-const MeasureInfoPopup = ({ onClose }: { onClose: () => void }) => {
+const MeasureInfoPopup = () => {
+  const dispatch = useDispatch();
+
   return (
-    <PopupContainer>
-      <PopupRow themeColor="#e3fceb">
-        <RowWrapper>
-          <Icon src={GreenIcon} alt="Green Marker" />
-          <Level>0~70dB</Level>
-        </RowWrapper>
-        <Description>전화벨 수준으로, 일상 생활에 영향이 없습니다.</Description>
-      </PopupRow>
-      <PopupRow themeColor="#e3f0fe">
-        <RowWrapper>
-          <Icon src={BlueIcon} alt="Blue Marker" />
-          <Level>70~100dB</Level>
-        </RowWrapper>
-        <Description>자동차 경적 수준. 잠시라도 노출 시 주의가 필요합니다.</Description>
-      </PopupRow>
-      <PopupRow themeColor="#fde3e3">
-        <RowWrapper>
-          <Icon src={RedIcon} alt="Red Marker" />
-          <Level>100~120dB</Level>
-        </RowWrapper>
-        <Description>항공기 이륙 수준. 짧은 시간 노출도 위험합니다.</Description>
-      </PopupRow>
-      <PopupButton onClick={onClose}>확인했어요</PopupButton>
-    </PopupContainer>
+    <Background>
+      <PopupContainer>
+        <PopupRow themeColor="#e3fceb">
+          <RowWrapper>
+            <Icon src={GreenIcon} alt="Green Marker" />
+            <Level>0~70dB</Level>
+          </RowWrapper>
+          <Description>전화벨 수준으로, 일상 생활에 영향이 없습니다.</Description>
+        </PopupRow>
+        <PopupRow themeColor="#e3f0fe">
+          <RowWrapper>
+            <Icon src={BlueIcon} alt="Blue Marker" />
+            <Level>70~100dB</Level>
+          </RowWrapper>
+          <Description>자동차 경적 수준. 잠시라도 노출 시 주의가 필요합니다.</Description>
+        </PopupRow>
+        <PopupRow themeColor="#fde3e3">
+          <RowWrapper>
+            <Icon src={RedIcon} alt="Red Marker" />
+            <Level>100~120dB</Level>
+          </RowWrapper>
+          <Description>항공기 이륙 수준. 짧은 시간 노출도 위험합니다.</Description>
+        </PopupRow>
+        <PopupButton onClick={()=>{dispatch(toggleModal(false))}}>확인했어요</PopupButton>
+      </PopupContainer>
+    </Background>
   );
 };
 
 export default MeasureInfoPopup;
+
+const Background = styled.div`
+  width: 375px;
+  height: 812px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.6);
+`
 
 // Styled Components
 const PopupContainer = styled.div`

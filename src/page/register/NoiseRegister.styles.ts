@@ -107,5 +107,5 @@ export const RegisterBtn = styled.button`
     border-radius: 58px;
     color: #FFFFFF;
     border: none;
-    margin: 1px 0 15px;
+    margin: 6px 17px 15px;
 `
