@@ -13,6 +13,7 @@ import Info from '../../assets/icons/ico_Info.png';
 import { NavLink } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setDecibel } from '../../store/data/dataSlice';
+import { toggleModal } from '../../store/menu/menuSlice';
 
 Chart.register(...registerables);
 
@@ -34,6 +35,7 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({address}) => {
     const [currentTime, setCurrentTime] = useState<string>("");
     const [fixedTime, setFixedTime] = useState<string | null>(null);
     const [isTimeFixed, setIsTimeFixed] = useState<boolean>(false); // 시간이 고정되었는지 여부
+
 
     const dispatch = useDispatch();
 
@@ -155,7 +157,7 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({address}) => {
             <div>
                 <img src={Logo} alt='logo' />
             </div>
-            <div>
+            <div onClick={() => dispatch(toggleModal(true))}>
                 <img src={Info} alt='info' />
             </div>            
         </Header>

@@ -1,4 +1,9 @@
 import React, { useEffect } from "react";
+import BackIcon from '../../assets/icons/ico_navigate_back.png';
+import { BtnWrapper } from "./NoiseDetail.styles";
+import { useDispatch } from "react-redux";
+import { toggleDeleteModal } from "../../store/menu/menuSlice";
+
 
 interface NoiseDetailProps {
   noise: {
@@ -15,17 +20,27 @@ interface NoiseDetailProps {
 }
 
 const NoiseDetail: React.FC<NoiseDetailProps> = ({ noise, onBack }) => {
+    const dispatch = useDispatch();
+
   const styles = {
-    container: {
-      padding: "16px",
-    },
     backButton: {
-      marginBottom: "16px",
-      padding: "10px",
-      backgroundColor: "#f0f0f0",
-      border: "1px solid #ccc",
-      borderRadius: "8px",
-      cursor: "pointer",
+        width: "48px",
+        height: "48px",
+        backgroundColor: "transparent",
+        border: "none",
+        borderRadius: "8px",
+        display: "flex",
+        cursor: "pointer",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    deleteBtn: {
+        backgroundColor: "transparent",
+        border: "none",
+        color: "#D32F2F",
+        fontWeight: "400",
+        fontSixe: "16px",
+        lineHeight: "16.8px",
     },
     header: {
       fontSize: "18px",
@@ -90,10 +105,17 @@ const NoiseDetail: React.FC<NoiseDetailProps> = ({ noise, onBack }) => {
   }, [noise.x, noise.y, noise.locationName]);
 
   return (
-    <div style={styles.container}>
-      <button style={styles.backButton} onClick={onBack}>
-        뒤로가기
-      </button>
+    <div>
+      <BtnWrapper>
+        <button style={styles.backButton} onClick={onBack}>
+            <img src={BackIcon} alt="뒤로가기" />
+        </button>
+        <div>
+            <button style={styles.deleteBtn} onClick={() => dispatch(toggleDeleteModal(true))}>
+                삭제
+            </button>
+        </div>
+      </BtnWrapper>
       <div id="map" style={styles.map}></div>
       <div style={styles.infoBox}>
         <h1 style={styles.header}>{noise.locationName || "알 수 없는 위치"}</h1>

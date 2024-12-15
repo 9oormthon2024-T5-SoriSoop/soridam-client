@@ -7,6 +7,7 @@ export const NavWrapper = styled.div`
     position: fixed;
     bottom: 0;
     box-shadow: -2px -1px 4px 0px #00000026;
+    background-color: white;
 `
 
 export const ItemBox = styled.ul`
