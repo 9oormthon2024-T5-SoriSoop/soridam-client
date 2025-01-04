@@ -8,12 +8,10 @@ import MarkerGreen from '../../assets/icons/ico_marker_green.png';
 import MarkerBlue from '../../assets/icons/ico_marker_blue.png';
 import MarkerRed from '../../assets/icons/ico_marker_red.png';
 import LocateIcon from '../../assets/icons/ico_locate.png';
-import Logo from '../../assets/logo/logo.png';
-import Info from '../../assets/icons/ico_Info.png';
 import { NavLink } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setDecibel } from '../../store/data/dataSlice';
-import { toggleModal } from '../../store/menu/menuSlice';
+// import { toggleModal } from '../../store/menu/menuSlice';
 
 Chart.register(...registerables);
 
@@ -26,8 +24,8 @@ interface DecibelMeterProps {
     address: string; // address를 props로 받음
 }
 
-const DecibelMeter: React.FC<DecibelMeterProps> = ({address}) => {
-    const { startMeasuringDecibel, stopMeasuringDecibel, decibel } = useRecordWithDecibel();
+const DecibelMeter: React.FC<DecibelMeterProps> = () => {
+    // const { startMeasuringDecibel, stopMeasuringDecibel, decibel } = useRecordWithDecibel();
     const [isRecording, setIsRecording] = useState(false);
     const [dataPoints, setDataPoints] = useState<DecibelDataPoint[]>([]); // Change to store time and decibel
     const [averageDecibel, setAverageDecibel] = useState<number>(0);
@@ -152,75 +150,75 @@ const DecibelMeter: React.FC<DecibelMeterProps> = ({address}) => {
     
 
   return (
-    <ChartContainer>
-        <Header>
-            <div>
-                <img src={Logo} alt='logo' />
-            </div>
-            <div onClick={() => dispatch(toggleModal(true))}>
-                <img src={Info} alt='info' />
-            </div>            
-        </Header>
-        <ChartWrapper>
-            <DateAndPositionContainer>
-                <DateWrapper>
-                    {fixedTime ? `${fixedTime}` : `${currentTime}`}
-                </DateWrapper>
-                <PositionWrapper>
-                    <img src={LocateIcon} alt='positionMarker' />
-                    {address}
-                </PositionWrapper>
-            </DateAndPositionContainer>
-            <MarkerWrapper>
-                { isRecording && averageDecibel < 70 ? <img src={MarkerGreen} alt='marker' /> 
-                    : isRecording && averageDecibel < 100 ? <img src={MarkerBlue} alt='marker' /> 
-                        : isRecording && averageDecibel < 120 ? <img src={MarkerRed} alt='marker'/> 
-                            : <img src={MarkerDefault} alt='marker' /> }
-            </MarkerWrapper>
-            <DecibelContainer>
-                <AverageDecibelWrapper>
-                    <p>평균</p>
-                    <p>{averageDecibel.toFixed(0)}</p>
-                </AverageDecibelWrapper>
-                <CurrentDecibelWrapper>
-                    <p>
-                    { isRecording && averageDecibel < 70 ? "조용함" 
-                    : isRecording && averageDecibel < 100 ? "보통" 
-                        : isRecording && averageDecibel < 120 ? "시끄러움" 
-                            : "측정 전" }  
-                    </p>
-                    <p>현재 {decibel.toFixed(0)}dB</p>
-                </CurrentDecibelWrapper>
-                <MaxDecibelWrapper>
-                    <p>최대</p>
-                    <p>{maxDecibel.toFixed(0)}</p>
-                </MaxDecibelWrapper>
-            </DecibelContainer>
-            <Line data={chartData} options={options} style={{ width: '100%', height: '172px' }}  />
-            <InfoWrapper>
-                <p>소음 측정을 시작할 준비가 됐어요</p>
-                <p>잠시만 기다려주세요. 평균값을 계산 중입니다.</p>
-            </InfoWrapper>
-        </ChartWrapper>
-        {isRecording ? (
-                <>
-                    <NavLink to='/register'>
-                        <SaveBtn onClick={()=>{dispatch(setDecibel({maxdB: maxDecibel.toFixed(0), averagedB: averageDecibel.toFixed(0), date: fixedTime }))}}>
-                            측정 저장
-                        </SaveBtn>
-                    </NavLink>
-                    <CancelBtn onClick={handleToggleRecording}>
-                        취소
-                    </CancelBtn>
-                </>
-            ) : (
-                <ChartBtn onClick={handleToggleRecording}>
-                    측정 시작
-                </ChartBtn>
-            )
-        }
-    </ChartContainer>
-    
+    // <ChartContainer>
+    //     {/* <Header>
+    //         <div>
+    //             <img src={Logo} alt='logo' />
+    //         </div>
+    //         <div onClick={() => dispatch(toggleModal(true))}>
+    //             <img src={Info} alt='info' />
+    //         </div>            
+    //     </Header> */}
+    //     <ChartWrapper>
+    //         <DateAndPositionContainer>
+    //             <DateWrapper>
+    //                 {fixedTime ? `${fixedTime}` : `${currentTime}`}
+    //             </DateWrapper>
+    //             <PositionWrapper>
+    //                 <img src={LocateIcon} alt='positionMarker' />
+    //                 {address}
+    //             </PositionWrapper>
+    //         </DateAndPositionContainer>
+    //         <MarkerWrapper>
+    //             { isRecording && averageDecibel < 70 ? <img src={MarkerGreen} alt='marker' /> 
+    //                 : isRecording && averageDecibel < 100 ? <img src={MarkerBlue} alt='marker' /> 
+    //                     : isRecording && averageDecibel < 120 ? <img src={MarkerRed} alt='marker'/> 
+    //                         : <img src={MarkerDefault} alt='marker' /> }
+    //         </MarkerWrapper>
+    //         <DecibelContainer>
+    //             <AverageDecibelWrapper>
+    //                 <p>평균</p>
+    //                 <p>{averageDecibel.toFixed(0)}</p>
+    //             </AverageDecibelWrapper>
+    //             <CurrentDecibelWrapper>
+    //                 <p>
+    //                 { isRecording && averageDecibel < 70 ? "조용함" 
+    //                 : isRecording && averageDecibel < 100 ? "보통" 
+    //                     : isRecording && averageDecibel < 120 ? "시끄러움" 
+    //                         : "측정 전" }  
+    //                 </p>
+    //                 <p>현재 {decibel.toFixed(0)}dB</p>
+    //             </CurrentDecibelWrapper>
+    //             <MaxDecibelWrapper>
+    //                 <p>최대</p>
+    //                 <p>{maxDecibel.toFixed(0)}</p>
+    //             </MaxDecibelWrapper>
+    //         </DecibelContainer>
+        //     <Line data={chartData} options={options} style={{ width: '100%', height: '172px' }}  />
+        //     <InfoWrapper>
+        //         <p>소음 측정을 시작할 준비가 됐어요</p>
+        //         <p>잠시만 기다려주세요. 평균값을 계산 중입니다.</p>
+        //     </InfoWrapper>
+        // // </ChartWrapper>
+        // {isRecording ? (
+        //         <>
+        //             <NavLink to='/register'>
+        //                 <SaveBtn onClick={()=>{dispatch(setDecibel({maxdB: maxDecibel.toFixed(0), averagedB: averageDecibel.toFixed(0), date: fixedTime }))}}>
+        //                     측정 저장
+        //                 </SaveBtn>
+        //             </NavLink>
+        //             <CancelBtn onClick={handleToggleRecording}>
+        //                 취소
+        //             </CancelBtn>
+        //         </>
+        //     ) : (
+        //         <ChartBtn onClick={handleToggleRecording}>
+        //             측정 시작
+        //         </ChartBtn>
+        //     )
+        // }
+    // </ChartContainer>
+    <div></div>
   );
 };
 
