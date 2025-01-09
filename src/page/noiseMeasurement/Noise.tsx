@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Logo from '../../assets/logo/logo.svg';
 import Info from '../../assets/icons/ico_Info.png';
 import { useDispatch } from 'react-redux';
-import { ChartContainer, Container, Header, InfoWrapper, LogoWrapper } from './Noise.styles';
+import { ChartContainer, Container, Header, InfoHeader, InfoWrapper, LogoWrapper } from './Noise.styles';
 import { toggleModal } from '../../store/menu/menuSlice';
 import DateTimeDisplay from '../../component/time/DateTimeDisplay';
 import useCurrentLocation from '../../hook/useCurrentLocation';
@@ -94,10 +94,10 @@ const Noise = () => {
         </InfoWrapper>
       </Header>
       <ChartContainer>
-        <div>
+        <InfoHeader>
           <DateTimeDisplay date={displayDate}/>
           <AddressDisplay address={address} locationError={locationError} addressError={addressError} />
-        </div>
+        </InfoHeader>
         {/* <DecibelChart/> */}
       </ChartContainer>
     </Container>

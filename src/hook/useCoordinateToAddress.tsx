@@ -4,6 +4,7 @@ const useCoordinateToAddress = (coords: { latitude: number; longitude: number } 
   const [address, setAddress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+
   useEffect(() => {
     if (!coords) return;
 
@@ -14,10 +15,12 @@ const useCoordinateToAddress = (coords: { latitude: number; longitude: number } 
         const geocoder = new kakao.maps.services.Geocoder();
         const coord = new kakao.maps.LatLng(coords.latitude, coords.longitude);
 
-        geocoder.coord2Address(coord.getLng(), coord.getLat(), (result: any, status: any) => {
+        geocoder.coord2Address(coord.getLng(), coord.getLat(), (result, status) => {
           if (status === kakao.maps.services.Status.OK) {
-            const address = result[0].address.address_name;
-            setAddress(address);
+            const fullAddress = result[0].address.address_name;
+            const addressParts = fullAddress.split(' '); // 공백으로 나누기
+            const trimmedAddress = addressParts.slice(-2).join(' '); // 뒤에서 두 항목만 결합
+            setAddress(trimmedAddress);
           } else {
             setError('주소를 변환하는 데 실패했습니다.');
           }

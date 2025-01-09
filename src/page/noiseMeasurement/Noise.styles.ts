@@ -52,3 +52,10 @@ export const ChartContainer = styled.div`
     background-color: #F4F4F4;
     border: 2px solid #D7D7D7;
 `
+
+export const InfoHeader = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.0625rem;
+`
