@@ -43,11 +43,14 @@ export const InfoWrapper = styled.div`
 `
 
 export const ChartContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 21.25rem;
     height: 27.75rem;
     margin-right: 0.375rem;
     margin-bottom: 1.125rem;
-    padding: 0.75rem 1rem 0.8125rem;
+    padding: 0.75rem 0.75rem 0.8125rem;
     border-radius: 1rem;
     background-color: #F4F4F4;
     border: 2px solid #D7D7D7;
@@ -57,5 +60,21 @@ export const InfoHeader = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 19.25rem;
     margin-bottom: 1.0625rem;
+    padding-right: 0.25rem;
+    padding-left: 0.25rem;
+`
+
+export const DescriptionWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 15.125rem;
+    height: 3.75rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #6D6D6D;
 `

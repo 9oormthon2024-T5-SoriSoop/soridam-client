@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Logo from '../../assets/logo/logo.svg';
 import Info from '../../assets/icons/ico_Info.png';
 import { useDispatch } from 'react-redux';
-import { ChartContainer, Container, Header, InfoHeader, InfoWrapper, LogoWrapper } from './Noise.styles';
+import { ChartContainer, Container, DescriptionWrapper, Header, InfoHeader, InfoWrapper, LogoWrapper } from './Noise.styles';
 import { toggleModal } from '../../store/menu/menuSlice';
 import DateTimeDisplay from '../../component/time/DateTimeDisplay';
 import useCurrentLocation from '../../hook/useCurrentLocation';
@@ -14,12 +14,16 @@ import { RootState } from '../../store';
 import Marker from '../../component/marker/Marker';
 import { toggleRecording } from '../../store/dateTime/dateTimeSlice';
 import useRecordWithDecibel from '../../hook/useRecordWithDecibel';
+import { DecibelDataPoint } from '../../types/DecibelDataPoint';
+import DecibelChart from '../../component/decibelChart/DecibelChart';
+import Timer from '../../component/timer/Timer';
 
 const Noise = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const { startMeasuringDecibel, stopMeasuringDecibel, decibel } = useRecordWithDecibel();
+    const [maxDecibel, setMaxDecibel] = useState<number>(0);
     const [averageDecibel, setAverageDecibel] = useState<number>(0);
-    const [dataPoints, setDataPoints] = useState<number[]>([]);
+    const [dataPoints, setDataPoints] = useState<DecibelDataPoint[]>([]);
     const { coords, error: locationError } = useCurrentLocation();
     const { address, error: addressError } = useCoordinateToAddress(coords);
 
@@ -52,16 +56,26 @@ const Noise = () => {
 
     useEffect(() => {
       if (isRecording) {
-        setDataPoints((prev) => [...prev.slice(-49), decibel]); // 최근 50개의 데시벨 데이터 유지
+        const timestamp = new Date().toISOString();
+            const currentDecibel = decibel === -Infinity ? 0 : decibel; // Set 0 if decibel is -Infinity
+            setDataPoints((prev) => [...prev.slice(-49), { x: timestamp, y: currentDecibel }]); // Keep last 50 data points
+            if (currentDecibel > maxDecibel) {
+                setMaxDecibel(currentDecibel);
+            }
       }
     }, [decibel, isRecording]);
   
     useEffect(() => {
-      if (dataPoints.length > 0) {
-        const total = dataPoints.reduce((sum, value) => sum + value, 0);
-        setAverageDecibel(total / dataPoints.length);
-      }
+        if (dataPoints.length > 0) {
+            const totalDecibels = dataPoints.reduce((sum, point) => sum + point.y, 0);
+            const average = totalDecibels / dataPoints.length;
+            setAverageDecibel(average);
+        }
     }, [dataPoints]);
+
+    const handleTimerComplete = () => {
+      console.log('타이머 완료');
+    };
 
   return (
     <Container>
@@ -79,7 +93,21 @@ const Noise = () => {
           <AddressDisplay address={address} locationError={locationError} addressError={addressError} />
         </InfoHeader>
         <Marker averageDecibel={averageDecibel} isRecording={isRecording} />
-        {/* <DecibelChart/> */}
+        <DecibelChart
+          decibel={decibel}
+          dataPoints={dataPoints}
+          averageDecibel={averageDecibel}
+          maxDecibel={maxDecibel}
+        />
+        <DescriptionWrapper>
+          <p>소음 측정을 시작할 준비가 됐어요!</p>
+          <p>평균값을 얻으려면 15초 동안 측정해볼게요.</p>
+          <Timer 
+            initialCountdown={15}
+            isActive={isRecording}
+            onComplete={handleTimerComplete}
+          />
+        </DescriptionWrapper>
       </ChartContainer>
     </Container>
   );
