@@ -3,15 +3,9 @@ import useRecordWithDecibel from '../../hook/useRecordWithDecibel';
 import { Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import { AverageDecibelWrapper, CancelBtn, ChartBtn, ChartContainer, ChartWrapper, CurrentDecibelWrapper, DateAndPositionContainer, DateWrapper, DecibelContainer, Header, InfoWrapper, MarkerWrapper, MaxDecibelWrapper, PositionWrapper, SaveBtn } from './DecibelChart.styles';
-import MarkerDefault from '../../assets/icons/ico_marker_default.png';
-import MarkerGreen from '../../assets/icons/ico_marker_green.png';
-import MarkerBlue from '../../assets/icons/ico_marker_blue.png';
-import MarkerRed from '../../assets/icons/ico_marker_red.png';
-import LocateIcon from '../../assets/icons/ico_locate.png';
 import { NavLink } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setDecibel } from '../../store/data/dataSlice';
-// import { toggleModal } from '../../store/menu/menuSlice';
 
 Chart.register(...registerables);
 
