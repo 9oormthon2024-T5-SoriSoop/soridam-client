@@ -12,6 +12,7 @@ import NoiseMap from './page/noiseMap/NoiseMap'
 import DeleteModal from './component/deleteModal/DeleteModal'
 import { toggleDeleteModal } from './store/menu/menuSlice' // 액션 가져오기
 
+
 function AppContent() {
   const location = useLocation();
   const dispatch = useAppDispatch(); // dispatch를 사용하기 위한 훅

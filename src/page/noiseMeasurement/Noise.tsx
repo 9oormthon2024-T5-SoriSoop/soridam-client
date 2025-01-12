@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Logo from '../../assets/logo/logo.svg';
 import Info from '../../assets/icons/ico_Info.png';
 import { useDispatch } from 'react-redux';
-import { ChartContainer, Container, DescriptionWrapper, Header, InfoHeader, InfoWrapper, LogoWrapper } from './Noise.styles';
+import { ChartContainer, Container, DescriptionWrapper, Header, InfoHeader, InfoWrapper, LogoWrapper, StyledToastContainer } from './Noise.styles';
 import { toggleModal } from '../../store/menu/menuSlice';
 import DateTimeDisplay from '../../component/time/DateTimeDisplay';
 import useCurrentLocation from '../../hook/useCurrentLocation';
@@ -18,6 +18,8 @@ import { DecibelDataPoint } from '../../types/DecibelDataPoint';
 import DecibelChart from '../../component/decibelChart/DecibelChart';
 import Timer from '../../component/timer/Timer';
 import MeasureBtn from '../../component/measureBtn/MeasureBtn';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 
 const Noise = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -45,7 +47,6 @@ const Noise = () => {
 
     const displayDate = isRecording && fixedDate ? fixedDate : currentDate;
 
-    //const [address, setAddress] = useState<string>('');
     const dispatch = useDispatch();
 
     const handleStart = () => {
@@ -62,6 +63,13 @@ const Noise = () => {
       setMaxDecibel(0); // 최대 데시벨 초기화
       setAverageDecibel(0); // 평균 데시벨 초기화
       setCurrentDecibel(0); // 현재 데시벨 초기화
+      // Toast 메시지 표시
+      toast.info('측정이 취소되었습니다.', {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeButton: false,
+      });
     };
   
     const handleComplete = () => {
@@ -142,6 +150,7 @@ const Noise = () => {
           onCancel={handleCancel}
           onRegister={handleRegister}
       />
+      <StyledToastContainer />
     </Container>
   );
 };

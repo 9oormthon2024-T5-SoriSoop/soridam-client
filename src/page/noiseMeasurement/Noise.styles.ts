@@ -1,3 +1,4 @@
+import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 
 export const Container = styled.div`
@@ -77,4 +78,22 @@ export const DescriptionWrapper = styled.div`
     font-size: 0.875rem;
     line-height: 1.25rem;
     color: #6D6D6D;
+`
+
+export const StyledToastContainer = styled(ToastContainer)`
+  .Toastify__toast {
+    width: 21.8125rem;
+    height: 2.75rem;
+    padding: 0.625rem;
+    gap: 0.625rem;
+    margin: 0.4375rem 0.8125rem 2.25rem; 
+    background-color: #474747;
+    text-align: center;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5rem;
+    opacity: 80%;
+    border-radius: 0.5rem;
+  }
 `
