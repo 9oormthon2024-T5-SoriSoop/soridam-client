@@ -1,31 +1,31 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 interface TimeState {
-  isFixed: boolean;
+  isRecording: boolean;
   fixedDate: Date | null;
 }
 
 const initialState: TimeState = {
-  isFixed: false,
+  isRecording: false,
   fixedDate: null,
 };
 
 const dateTimeSlice = createSlice({
-  name: 'time',
+  name: 'dateTime',
   initialState,
   reducers: {
-    startMeasurement: (state) => {
-      state.isFixed = true;
+    toggleRecording(state) {
+      state.isRecording = !state.isRecording
+    },
+
+    setFixedDate: (state) => {
       state.fixedDate = new Date();
     },
-    cancelMeasurement: (state) => {
-      state.isFixed = false;
-      state.fixedDate = null;
-    },
+
     resetState: () => initialState,
   },
 });
 
-export const { startMeasurement, cancelMeasurement, resetState } = dateTimeSlice.actions;
+export const { toggleRecording, setFixedDate, resetState } = dateTimeSlice.actions;
 
 export default dateTimeSlice.reducer;

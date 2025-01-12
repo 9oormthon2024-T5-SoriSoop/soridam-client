@@ -10,74 +10,74 @@ export const Background = styled.div`
 `
 
 export const InfoContainer = styled.div`
-    width: 276px;
-    height: 313px;
+    width: 17.25rem;
+    height: 19.5625rem;
     position: absolute;
-    top: 249.5px;
-    left: 50px;
-    border-radius: 15.37px;
+    top: 15.59375rem;
+    left: 3.125rem;
+    border-radius: 0.960625rem;
     background-color: #fff;
     box-shadow: 0px 7.69px 82.21px 0px #2548992B;
-    padding: 16px 15.5px;
+    padding: 1rem 0.96875rem;
 `
 
 export const RowContainer = styled.div`
     width: 100%;
-    margin-bottom: 27px;
+    margin-bottom: 1.6875rem;
     &:last-of-type {
-        margin-bottom: 16px;
+        margin-bottom: 1rem;
     }   
 `
 
 export const RowWrapper = styled.div`
-    width:244px;
-    height: 35px;
-    padding: 4px;
-    gap: 5px;
+    width:15.25rem;
+    height: 2.1875rem;
+    padding: 0.25rem;
+    gap: 0.3125rem;
     background-color:  #E8F0FF;
-    border-radius: 4px;
+    border-radius: 0.25rem;
     display: flex;
     align-items: center;
     justify-content: center;
 `
 
 export const PopUpBtn = styled.button`
-    width: 244px;
-    height: 40px;
+    width: 15.25rem;
+    height: 2.5rem;
     border: none;
-    border-radius: 6.99px;
-    padding: 5.24px 13.97px 5.24px 13.97px;
-    gap: 8.73px;
+    border-radius: 0.436875rem;
+    padding: 0.3275rem 0.873125rem 0.3275rem 0.873125rem;
+    gap: 0.545625rem;
     background-color: #007BFF;
     color: #fff;
     font-family: "Pretendard";
     font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 1rem;
+    line-height: 1.5rem;
     text-align: center;
     cursor: pointer;
 `
 
 export const Icon = styled.img`
-    width: 24px;
-    height: 24px;
+    width: 1.5rem;
+    height: 1.5rem;
 `
 
 export const DecibelLv = styled.p`
     font-family: "Pretendard";
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
-    line-height: 27px;
+    line-height: 1.6875rem;
     text-align: left;
 `
 
 export const Description = styled.p`
-    margin-top: 5px;
+    margin-top: 0.3125rem;
     font-family: "Pretendard";
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: 400;
-    line-height: 16.8px;
-    letter-spacing: -0.34px;
+    line-height: 1.05rem;
+    letter-spacing: -0.02125rem;
     text-align: left;
     color: #0000008A;
 `

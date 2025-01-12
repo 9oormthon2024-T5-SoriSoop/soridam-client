@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 export const NavWrapper = styled.div`
-    width: 375px;
-    height: 100px;
-    padding: 10px 46px 40px 47px;
+    width: 23.4375rem;
+    height: 6.25rem;
+    padding: 0.625rem 2.875rem 2.5rem 2.9375rem;
     position: fixed;
     bottom: 0;
     box-shadow: -2px -1px 4px 0px #00000026;
@@ -15,11 +15,11 @@ export const ItemBox = styled.ul`
     align-items: center;
     justify-content: space-between;
     font-weight: 500;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
     li {
-        width: 52px;
-        height: 50px;
+        width: 3.25rem;
+        height: 3.125rem;
         display: flex;
         text-align: center;
         cursor: pointer;

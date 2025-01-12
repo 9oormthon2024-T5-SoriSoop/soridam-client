@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Logo from '../../assets/logo/logo.svg';
 import Info from '../../assets/icons/ico_Info.png';
 import { useDispatch } from 'react-redux';
-import { ChartContainer, Container, Header, InfoWrapper, LogoWrapper } from './Noise.styles';
+import { ChartContainer, Container, DescriptionWrapper, Header, InfoHeader, InfoWrapper, LogoWrapper, StyledToastContainer } from './Noise.styles';
 import { toggleModal } from '../../store/menu/menuSlice';
 import DateTimeDisplay from '../../component/time/DateTimeDisplay';
 import useCurrentLocation from '../../hook/useCurrentLocation';
@@ -11,76 +11,104 @@ import AddressDisplay from '../../component/currentLocate/AddressDisplay';
 import useResetStateOnPath from '../../hook/useResetStateOnPath';
 import { useAppSelector } from '../../hook/redux';
 import { RootState } from '../../store';
+import Marker from '../../component/marker/Marker';
+import { toggleRecording } from '../../store/dateTime/dateTimeSlice';
+import useRecordWithDecibel from '../../hook/useRecordWithDecibel';
+import { DecibelDataPoint } from '../../types/DecibelDataPoint';
+import DecibelChart from '../../component/decibelChart/DecibelChart';
+import Timer from '../../component/timer/Timer';
+import MeasureBtn from '../../component/measureBtn/MeasureBtn';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 
 const Noise = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
-  
+    const [isCompleted, setIsCompleted] = useState(false);
+    const { startMeasuringDecibel, stopMeasuringDecibel, decibel } = useRecordWithDecibel();
+    const [currentDecibel, setCurrentDecibel] = useState<number>(0);
+    const [maxDecibel, setMaxDecibel] = useState<number>(0);
+    const [averageDecibel, setAverageDecibel] = useState<number>(0);
+    const [dataPoints, setDataPoints] = useState<DecibelDataPoint[]>([]);
     const { coords, error: locationError } = useCurrentLocation();
     const { address, error: addressError } = useCoordinateToAddress(coords);
 
-    const { isFixed, fixedDate } = useAppSelector((state: RootState) => state.dateTime);
+    const { isRecording, fixedDate } = useAppSelector((state: RootState) => state.dateTime);
 
     useResetStateOnPath('/measure');
 
     useEffect(() => {
-      if (!isFixed) {
+      if (!isRecording) {
         const intervalId = setInterval(() => {
           setCurrentDate(new Date());
         }, 1000);
         return () => clearInterval(intervalId);
       }
-    }, [isFixed]);
+    }, [isRecording]);
 
-  const displayDate = isFixed && fixedDate ? fixedDate : currentDate;
+    const displayDate = isRecording && fixedDate ? fixedDate : currentDate;
 
-  //const [address, setAddress] = useState<string>('');
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
-  // const fetchAddressFromCoords = () => {
-  //   navigator.geolocation.getCurrentPosition(
-  //     async (position) => {
-  //       const { latitude, longitude } = position.coords;
-  //       console.log('위도:', latitude, '경도:', longitude);
-  //       dispatch(setPosition({x: latitude, y: longitude}));
+    const handleStart = () => {
+      dispatch(toggleRecording());
+      startMeasuringDecibel();
+      setIsCompleted(false); // 타이머 완료 상태 초기화
+    };
+  
+    const handleCancel = () => {
+      dispatch(toggleRecording());
+      stopMeasuringDecibel();
+      setIsCompleted(false); // 타이머 완료 상태 초기화
+      setDataPoints([]); // 데이터 초기화
+      setMaxDecibel(0); // 최대 데시벨 초기화
+      setAverageDecibel(0); // 평균 데시벨 초기화
+      setCurrentDecibel(0); // 현재 데시벨 초기화
+      // Toast 메시지 표시
+      toast.info('측정이 취소되었습니다.', {
+          position: "bottom-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeButton: false,
+      });
+    };
+  
+    const handleComplete = () => {
+      setIsCompleted(true);
+    };
+  
+    const handleRegister = () => {
+      console.log('데이터 등록 완료');
+      handleCancel(); // 등록 후 초기화
+    };
 
-  //       const REST_API_KEY = '83ce629a6d7b809e79dc0b269d5a78c9'; // 카카오 REST API 키
-  //       const url = `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${longitude}&y=${latitude}`;
+    useEffect(() => {
+      if (!isRecording) {
+        setIsCompleted(false); // 측정 중지 시 완료 상태 초기화
+        setDataPoints([]); // 그래프 데이터 초기화
+        setMaxDecibel(0); // 최대 데시벨 초기화
+        setAverageDecibel(0); // 평균 데시벨 초기화
+      }
+    }, [isRecording]);
 
-  //       try {
-  //         const response = await fetch(url, {
-  //           method: 'GET',
-  //           headers: {
-  //             Authorization: `KakaoAK ${REST_API_KEY}`, // 인증 헤더
-  //           },
-  //         });
-
-  //         if (!response.ok) {
-  //           throw new Error(`HTTP error! Status: ${response.status}`);
-  //         }
-
-  //         const data = await response.json();
-  //         if (data && data.documents && data.documents.length > 0) {
-  //           let address = data.documents[0].address_name; // 첫 번째 주소를 가져옴
-  //           console.log('주소:', address);
-  //           address = address.slice(0, 7);
-  //           setAddress(address); // 화면에 주소 표시
-  //         } else {
-  //           console.error('주소 데이터를 찾을 수 없습니다.');
-  //         }
-  //       } catch (error) {
-  //         console.error('API 호출 중 오류 발생:', error);
-  //       }
-  //     },
-  //     (error) => {
-  //       console.error('위치 정보를 가져오는 중 오류 발생:', error);
-  //     }
-  //   );
-  // };
-
-  // useEffect(() => {
-  //   fetchAddressFromCoords(); // 컴포넌트가 마운트될 때 호출
-  // }, []);
-
+    useEffect(() => {
+      if (isRecording) {
+        const timestamp = new Date().toISOString();
+            const currentDecibel = decibel === -Infinity ? 0 : decibel; // Set 0 if decibel is -Infinity
+            setCurrentDecibel(currentDecibel);
+            setDataPoints((prev) => [...prev.slice(-49), { x: timestamp, y: currentDecibel }]); // Keep last 50 data points
+            if (currentDecibel > maxDecibel) {
+                setMaxDecibel(currentDecibel);
+            }
+      }
+    }, [decibel, isRecording]);
+  
+    useEffect(() => {
+        if (dataPoints.length > 0) {
+            const totalDecibels = dataPoints.reduce((sum, point) => sum + point.y, 0);
+            const average = totalDecibels / dataPoints.length;
+            setAverageDecibel(average);
+        }
+    }, [dataPoints]);
 
 
   return (
@@ -93,13 +121,36 @@ const Noise = () => {
           <img src={Info} alt='info'/>
         </InfoWrapper>
       </Header>
-      <ChartContainer>
-        <div>
+      <ChartContainer isRecording={isRecording}>
+        <InfoHeader>
           <DateTimeDisplay date={displayDate}/>
           <AddressDisplay address={address} locationError={locationError} addressError={addressError} />
-        </div>
-        {/* <DecibelChart/> */}
+        </InfoHeader>
+        <Marker averageDecibel={averageDecibel} isRecording={isRecording} />
+        <DecibelChart
+          decibel={currentDecibel}
+          dataPoints={dataPoints}
+          averageDecibel={averageDecibel}
+          maxDecibel={maxDecibel}
+        />
+        <DescriptionWrapper>
+          <p>소음 측정을 시작할 준비가 됐어요!</p>
+          <p>평균값을 얻으려면 15초 동안 측정해볼게요.</p>
+          <Timer 
+            initialCountdown={15}
+            isActive={isRecording}
+            onComplete={handleComplete}
+          />
+        </DescriptionWrapper>
       </ChartContainer>
+      <MeasureBtn
+          isRecording={isRecording}
+          isCompleted={isCompleted}
+          onStart={handleStart}
+          onCancel={handleCancel}
+          onRegister={handleRegister}
+      />
+      <StyledToastContainer />
     </Container>
   );
 };
