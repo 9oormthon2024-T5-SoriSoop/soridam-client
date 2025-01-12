@@ -42,7 +42,7 @@ export const InfoWrapper = styled.div`
     }
 `
 
-export const ChartContainer = styled.div`
+export const ChartContainer = styled.div<{ isRecording: boolean }>`
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -52,8 +52,8 @@ export const ChartContainer = styled.div`
     margin-bottom: 1.125rem;
     padding: 0.75rem 0.75rem 0.8125rem;
     border-radius: 1rem;
-    background-color: #F4F4F4;
-    border: 2px solid #D7D7D7;
+    background-color: ${({ isRecording }) => (isRecording ? '#F4F8FF' : '#F4F4F4')};
+    border: 2px solid ${({ isRecording }) => (isRecording ? '#CFE2FF' : '#D7D7D7')};
 `
 
 export const InfoHeader = styled.div`

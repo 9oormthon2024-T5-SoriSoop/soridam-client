@@ -17,10 +17,13 @@ import useRecordWithDecibel from '../../hook/useRecordWithDecibel';
 import { DecibelDataPoint } from '../../types/DecibelDataPoint';
 import DecibelChart from '../../component/decibelChart/DecibelChart';
 import Timer from '../../component/timer/Timer';
+import MeasureBtn from '../../component/measureBtn/MeasureBtn';
 
 const Noise = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [isCompleted, setIsCompleted] = useState(false);
     const { startMeasuringDecibel, stopMeasuringDecibel, decibel } = useRecordWithDecibel();
+    const [currentDecibel, setCurrentDecibel] = useState<number>(0);
     const [maxDecibel, setMaxDecibel] = useState<number>(0);
     const [averageDecibel, setAverageDecibel] = useState<number>(0);
     const [dataPoints, setDataPoints] = useState<DecibelDataPoint[]>([]);
@@ -45,19 +48,45 @@ const Noise = () => {
     //const [address, setAddress] = useState<string>('');
     const dispatch = useDispatch();
 
-    const handleToggleRecording = () => {
+    const handleStart = () => {
       dispatch(toggleRecording());
-      if (!isRecording) {
-        startMeasuringDecibel();
-      } else {
-        stopMeasuringDecibel();
-      }
+      startMeasuringDecibel();
+      setIsCompleted(false); // 타이머 완료 상태 초기화
     };
+  
+    const handleCancel = () => {
+      dispatch(toggleRecording());
+      stopMeasuringDecibel();
+      setIsCompleted(false); // 타이머 완료 상태 초기화
+      setDataPoints([]); // 데이터 초기화
+      setMaxDecibel(0); // 최대 데시벨 초기화
+      setAverageDecibel(0); // 평균 데시벨 초기화
+      setCurrentDecibel(0); // 현재 데시벨 초기화
+    };
+  
+    const handleComplete = () => {
+      setIsCompleted(true);
+    };
+  
+    const handleRegister = () => {
+      console.log('데이터 등록 완료');
+      handleCancel(); // 등록 후 초기화
+    };
+
+    useEffect(() => {
+      if (!isRecording) {
+        setIsCompleted(false); // 측정 중지 시 완료 상태 초기화
+        setDataPoints([]); // 그래프 데이터 초기화
+        setMaxDecibel(0); // 최대 데시벨 초기화
+        setAverageDecibel(0); // 평균 데시벨 초기화
+      }
+    }, [isRecording]);
 
     useEffect(() => {
       if (isRecording) {
         const timestamp = new Date().toISOString();
             const currentDecibel = decibel === -Infinity ? 0 : decibel; // Set 0 if decibel is -Infinity
+            setCurrentDecibel(currentDecibel);
             setDataPoints((prev) => [...prev.slice(-49), { x: timestamp, y: currentDecibel }]); // Keep last 50 data points
             if (currentDecibel > maxDecibel) {
                 setMaxDecibel(currentDecibel);
@@ -73,9 +102,6 @@ const Noise = () => {
         }
     }, [dataPoints]);
 
-    const handleTimerComplete = () => {
-      console.log('타이머 완료');
-    };
 
   return (
     <Container>
@@ -87,14 +113,14 @@ const Noise = () => {
           <img src={Info} alt='info'/>
         </InfoWrapper>
       </Header>
-      <ChartContainer>
+      <ChartContainer isRecording={isRecording}>
         <InfoHeader>
           <DateTimeDisplay date={displayDate}/>
           <AddressDisplay address={address} locationError={locationError} addressError={addressError} />
         </InfoHeader>
         <Marker averageDecibel={averageDecibel} isRecording={isRecording} />
         <DecibelChart
-          decibel={decibel}
+          decibel={currentDecibel}
           dataPoints={dataPoints}
           averageDecibel={averageDecibel}
           maxDecibel={maxDecibel}
@@ -105,10 +131,17 @@ const Noise = () => {
           <Timer 
             initialCountdown={15}
             isActive={isRecording}
-            onComplete={handleTimerComplete}
+            onComplete={handleComplete}
           />
         </DescriptionWrapper>
       </ChartContainer>
+      <MeasureBtn
+          isRecording={isRecording}
+          isCompleted={isCompleted}
+          onStart={handleStart}
+          onCancel={handleCancel}
+          onRegister={handleRegister}
+      />
     </Container>
   );
 };
