@@ -17,10 +17,20 @@ const NavBar = () => {
     const isMeasureActive = useMatch("/measure");
     const isSaveActive = useMatch("/save");
 
+    const handleMenuClick = (menu: string) => {
+        if (menu === "measure") {
+            dispatch(toggleMenu(isMeasureActive ? false : true));
+        } else if (menu === "map") {
+            dispatch(toggleMenu(isMapActive ? false : true));
+        } else if (menu === "save") {
+            dispatch(toggleMenu(isSaveActive ? false : true));
+        }
+    };
+
     return (
         <NavWrapper>
             <ItemBox>
-            <li onClick={() => dispatch(toggleMenu(false))}>
+            <li onClick={() => handleMenuClick("measure")}>
                     <NavLink 
                         to={"/measure"} 
                         className={({ isActive }) => isActive ? "active-item" : "inactive-item"}
@@ -33,7 +43,7 @@ const NavBar = () => {
                         </div>
                     </NavLink>
                 </li>
-                <li onClick={() => dispatch(toggleMenu(false))}>
+                <li onClick={() => handleMenuClick("map")}>
                     <NavLink 
                         to={"/"} 
                         className={({ isActive }) => isActive ? "active-item" : "inactive-item"}
@@ -46,7 +56,7 @@ const NavBar = () => {
                         </div>
                     </NavLink>
                 </li>
-                <li onClick={() => dispatch(toggleMenu(false))}>
+                <li onClick={() => handleMenuClick("save")}>
                     <NavLink 
                         to={"/save"} 
                         className={({ isActive }) => isActive ? "active-item" : "inactive-item"}

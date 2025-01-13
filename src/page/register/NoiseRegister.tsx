@@ -1,190 +1,181 @@
-import React, { useState, useEffect } from 'react';
-import useKakaoLoader from '../../hook/useKakaoLoader';
-import { Map, MapMarker } from 'react-kakao-maps-sdk';
-import BackIcon from '../../assets/icons/ico_navigate_back.png';
-import { useAppSelector } from '../../hook/redux';
-import { setPosition } from '../../store/data/dataSlice';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
 import MarkerGreen from '../../assets/icons/ico_marker_green.png';
 import MarkerBlue from '../../assets/icons/ico_marker_blue.png';
 import MarkerRed from '../../assets/icons/ico_marker_red.png';
-import { AddressWrapper, AveragedBWrapper, DateWrapper, DecibelContainer, DecibelWrapper, InfoContainer, InfoWrapper, MarkerWrapper, MaxdBWrapper, RegisterBtn, ReviewWrapper } from './NoiseRegister.styles';
-import { NavLink } from 'react-router-dom';
+import BackIcon from '../../assets/icons/ico_navigate_back.png';
+import { useAppSelector } from '../../hook/redux';
+import { useDispatch } from 'react-redux';
+import { BackBtnWrapper, CommentInput, CommentTitle, DateTimeContainer, DecibelWrapper, InfoContainer, LimitInfo, LocationWrapper, LoctionInfoWrapper, NoiseImgWrapper, NoiseInfo, NoiseLevelWrapper, NoiseResultTitle, NoiseResultWrapper, StyledToastContainer, SubmitBtn } from './NoiseRegister.styles';
+import { RootState } from '../../store';
+import { toggleBackModal } from '../../store/menu/menuSlice';
+import BackModal from '../../component/backModal/BackModal';
+import { Map, MapMarker } from 'react-kakao-maps-sdk';
+import useCoordinateToAddress from '../../hook/useCoordinateToAddress';
+import useFormattedDateTime from '../../hook/useFormattedDateTime';
 import axios from 'axios';
-
-
-type LatLng = {
-  lat: number;
-  lng: number;
-};
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 
 const NoiseRegister = () => {
-  const [currentPosition, setCurrentPosition] = useState<LatLng>({ lat: 0, lng: 0 });
-  const [address, setAddress] = useState<string>('');
   const [value, setValue] = useState<string>('');
-  const { locate, decibel } = useAppSelector((state) => state.data);
+  const [isTouched, setIsTouched] = useState<boolean>(false);
+  const isBackModalOpen = useAppSelector((state: RootState) => state.menu.backModalOpen); // Redux 상태 가져오기
+  const { maxDecibel, averageDecibel, latitude, longitude } = useAppSelector((state: RootState) => state.noise);
+  // useCoordinateToAddress 훅을 사용하여 주소 얻기
+  const { address, error } = useCoordinateToAddress({ latitude, longitude });
+  const { fixedDate } = useAppSelector((state: RootState) => state.dateTime);
+  // 날짜와 시간 포맷을 가져오는 훅 사용
+  const { formattedDate, formattedTime } = useFormattedDateTime(fixedDate);
   const API_BASE_URL = "https://63c2-59-18-161-28.ngrok-free.app/api";
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const data = {
-    x: locate.x,
-    y: locate.y,
-    avgDecibel: decibel.averagedB,
-    maxDecibel: decibel.maxdB,
-    review: value,
+  // 뒤로가기 모달 열기
+  const handleBackClick = () => {
+    dispatch(toggleBackModal(true)); // Redux로 모달 열기
+  };
+
+  // 마커와 텍스트를 소음 수준에 따라 결정
+  let markerSrc = '';
+  let markerText = '';
+  
+  if (averageDecibel <= 70) {
+    markerSrc = MarkerGreen;  // 조용함
+    markerText = '조용함';
+  } else if (averageDecibel > 70 && averageDecibel <= 100) {
+    markerSrc = MarkerBlue;  // 보통
+    markerText = '보통';
+  } else {
+    markerSrc = MarkerRed;  // 시끄러움
+    markerText = '시끄러움';
   }
 
-  const fetchAddressFromCoords = () => {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          console.log('위도:', latitude, '경도:', longitude);
-          dispatch(setPosition({x: latitude, y: longitude}));
-  
-          const REST_API_KEY = '83ce629a6d7b809e79dc0b269d5a78c9'; // 카카오 REST API 키
-          const url = `https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${longitude}&y=${latitude}`;
-  
-          try {
-            const response = await fetch(url, {
-              method: 'GET',
-              headers: {
-                Authorization: `KakaoAK ${REST_API_KEY}`, // 인증 헤더
-              },
-            });
-  
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-  
-            const data = await response.json();
-            if (data && data.documents && data.documents.length > 0) {
-              let address = data.documents[0].address_name; // 첫 번째 주소를 가져옴
-              console.log('주소:', address);
-              address = address.slice(0, 7);
-              setAddress(address); // 화면에 주소 표시
-            } else {
-              console.error('주소 데이터를 찾을 수 없습니다.');
-            }
-          } catch (error) {
-            console.error('API 호출 중 오류 발생:', error);
-          }
-        },
-        (error) => {
-          console.error('위치 정보를 가져오는 중 오류 발생:', error);
+  const isValueEmpty = value.trim() === '';
+  const borderColor = isValueEmpty && isTouched ? '#FF3131' : isTouched ? '#007BFF' : '#808080';
+  const limitInfoColor = isValueEmpty && isTouched ? '#FF3131' : '#808080';
+  const submitBtnColor = isValueEmpty ? '#808080' : '#007BFF';
+  const isSubmitDisabled = isValueEmpty;
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setValue(e.target.value);
+  };
+
+  const handleSubmit = async () => {
+    if (isSubmitDisabled) return;
+
+    const data = {
+      x: latitude,
+      y: longitude,
+      avgDecibel: averageDecibel.toFixed(2),
+      maxDecibel: maxDecibel.toFixed(2),
+      review: value,
+    };
+
+    try {
+      const response = await axios.post(`${API_BASE_URL}/noises`, data);
+      console.log('Response:', response.data);
+
+      // Toast 성공 메시지 표시
+      toast.success(
+        '등록 완료! 측정 데이터와 한줄평이 저장되었습니다. [저장 탭]에서 확인하세요.',
+        { position: 'bottom-center',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: true,
         }
       );
-    };
-  
-    useEffect(() => {
-      fetchAddressFromCoords(); // 컴포넌트가 마운트될 때 호출
-    }, []);
 
+      // 경로 이동
+      navigate('/measure');
+    } catch (error) {
+      console.error('Error:', error);
 
-  // Load Kakao Map
-  useKakaoLoader();
-
-  // Fetch user location once on component mount
-  useEffect(() => {
-    const fetchLocation = () => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setCurrentPosition({ lat: latitude, lng: longitude });
-        },
-        (error) => console.error('Geolocation error:', error),
-        { enableHighAccuracy: true }
-      );
-    };
-
-    fetchLocation();
-  }, []); // Empty dependency array ensures it runs only once
+      // Toast 실패 메시지 표시
+      toast.error('등록 실패. 네트워크 연결을 확인해주세요.', {
+        position: 'bottom-center',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: true,
+      });
+    }
+  };
 
   return (
     <div>
-        <NavLink to={'/measure'}>
-          <div>
-            <img src={BackIcon} alt='backIcon' />
-          </div>
-        </NavLink>
-        <Map
-            id="map"
-            center={{
-                lat: currentPosition.lat,
-                lng: currentPosition.lng,
-            }}
-            style={{
-                width: '100%',
-                height: '160px',
-            }}
-            level={3} // Zoom level
-            >
-            <MapMarker
-                position={{
-                lat: currentPosition.lat,
-                lng: currentPosition.lng,
-                }}
-            />
-        </Map>
+        <BackBtnWrapper>
+            <img src={BackIcon} alt='backIcon' onClick={handleBackClick}/>
+        </BackBtnWrapper>
         <InfoContainer>
-          <InfoWrapper>
-            <AddressWrapper>{address}</AddressWrapper>
-            <DateWrapper>{decibel.date}</DateWrapper>
-          </InfoWrapper>
-          { decibel.averagedB < 70 ? (
-                <MarkerWrapper>
-                  <img src={MarkerGreen} alt='markerG'/>
-                  <div>
-                    조용함
-                  </div>
-                </MarkerWrapper>
-            ) 
-                    : decibel.averagedB < 100 ? (
-                      <MarkerWrapper>
-                        <img src={MarkerBlue} alt='markerB'/>
-                        <div>
-                          보통
-                        </div>
-                      </MarkerWrapper>
-                      ) 
-                        : (
-                          <MarkerWrapper>
-                            <img src={MarkerRed} alt='markerR'/>
-                            <div>
-                              시끄러움
-                            </div>
-                          </MarkerWrapper>
-                          )  }
-        </InfoContainer>
-        <DecibelContainer>
-          <p>소음 측정 결과</p>
-          <DecibelWrapper>
-            <AveragedBWrapper>
-              평균 {decibel.averagedB}
-            </AveragedBWrapper>
-            <MaxdBWrapper>
-              최대 {decibel.maxdB}
-            </MaxdBWrapper>
-          </DecibelWrapper>
-        </DecibelContainer>
-        <ReviewWrapper>
-          <p>한줄평</p>
-          <div>
-          <textarea id="comment" 
-            placeholder="소음 상황을 최대 150자 이내로 간단히 작성해주세요."
+          <Map
+              id="map"
+              center={{
+                  lat: latitude,
+                  lng: longitude,
+              }}
+              style={{
+                  width: '21.4375rem',
+                  height: '10rem',
+                  marginBottom: '0.875rem',
+              }}
+              level={3} // Zoom level
+          >
+              <MapMarker
+                  position={{
+                    lat: latitude,
+                    lng: longitude,
+                  }}
+              />
+          </Map>
+          <LoctionInfoWrapper>
+            {address ? (
+              <LocationWrapper>{address}</LocationWrapper>
+            ) : error ? (
+              <LocationWrapper>{error}</LocationWrapper>
+            ) : (
+              <LocationWrapper>주소를 불러오는 중...</LocationWrapper>
+            )}
+            <NoiseLevelWrapper>
+              <NoiseImgWrapper><img src={markerSrc} alt='marker' /></NoiseImgWrapper>
+              <NoiseInfo>{markerText}</NoiseInfo>
+            </NoiseLevelWrapper>
+          </LoctionInfoWrapper>
+          <DateTimeContainer>
+              <p>{formattedDate}</p>
+              <p>{formattedTime}</p>
+          </DateTimeContainer>
+          <NoiseResultTitle>소음 측정 결과</NoiseResultTitle>
+          <NoiseResultWrapper>
+            <DecibelWrapper>
+              <p>평균</p>
+              <p>{averageDecibel.toFixed(2)}</p>
+            </DecibelWrapper>
+            <DecibelWrapper>
+              <p>최대</p>
+              <p>{maxDecibel.toFixed(2)}</p>
+            </DecibelWrapper>
+          </NoiseResultWrapper>
+          <CommentTitle>한줄평</CommentTitle>
+          <CommentInput 
+            placeholder='소음 상황이나 추가로 적고 싶은 내용을 150자 이내로 간단히 작성해주세요. (예: 공사 소음으로 인해 시끄러움)'
             value={value}
-            onChange={(e) => setValue(e.target.value)}
-          ></textarea>             
-          </div>
-        </ReviewWrapper>
-        <RegisterBtn onClick={() => 
-          axios.post(`${API_BASE_URL}/noises`, data)
-            .then(response => {
-              console.log('Response:', response.data);
-            }).catch(error => {
-              console.error('Error:', error);
-            })}>
-          등록하기
-        </RegisterBtn>
+            onChange={handleInputChange}
+            onBlur={() => setIsTouched(true)}
+            borderColor={borderColor}
+          />
+          <LimitInfo color={limitInfoColor}>
+            한줄평을 입력 후 등록 버튼이 활성화됩니다.
+          </LimitInfo>
+          <SubmitBtn
+            onClick={handleSubmit}
+            backgroundColor={submitBtnColor}
+            disabled={isSubmitDisabled}
+          >
+            등록하기
+          </SubmitBtn>
+        </InfoContainer>
+        <StyledToastContainer />
+        {isBackModalOpen && <BackModal/> }
     </div>
   );
 };

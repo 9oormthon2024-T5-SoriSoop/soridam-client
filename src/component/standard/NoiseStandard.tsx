@@ -3,7 +3,7 @@ import GreenIcon from "../../assets/icons/ico_marker_green.png";
 import BlueIcon from "../../assets/icons/ico_marker_blue.png";
 import RedIcon from "../../assets/icons/ico_marker_red.png";
 import { useDispatch } from "react-redux";
-import { toggleModal } from "../../store/menu/menuSlice";
+import { toggleInfoModal } from "../../store/menu/menuSlice";
 import { Background, DecibelLv, Description, Icon, InfoContainer, PopUpBtn, RowContainer, RowWrapper } from "./NoiseStandard.styles";
 
 const MeasureInfoPopup = () => {
@@ -33,7 +33,7 @@ const MeasureInfoPopup = () => {
           </RowWrapper>
           <Description>항공기 이륙 수준. 짧은 시간 노출도 위험합니다.</Description>
         </RowContainer>
-        <PopUpBtn onClick={()=>{dispatch(toggleModal(false))}}>확인했어요</PopUpBtn>
+        <PopUpBtn onClick={()=>{dispatch(toggleInfoModal(false))}}>확인했어요</PopUpBtn>
       </InfoContainer>
     </Background>
   );
