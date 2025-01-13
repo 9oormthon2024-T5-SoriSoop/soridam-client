@@ -125,6 +125,13 @@ const NoiseRegister = () => {
                     lat: latitude,
                     lng: longitude,
                   }}
+                  image={{
+                    src: markerSrc, // 마커이미지의 주소입니다
+                    size: {
+                      width: 48,
+                      height: 48,
+                    }, // 마커이미지의 크기입니다
+                  }}
               />
           </Map>
           <LoctionInfoWrapper>
