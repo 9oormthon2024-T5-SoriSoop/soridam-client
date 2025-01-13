@@ -2,12 +2,12 @@ import { createSlice } from '@reduxjs/toolkit';
 
 interface TimeState {
   isRecording: boolean;
-  fixedDate: Date | null;
+  fixedDate: Date;
 }
 
 const initialState: TimeState = {
   isRecording: false,
-  fixedDate: null,
+  fixedDate: new Date(),
 };
 
 const dateTimeSlice = createSlice({

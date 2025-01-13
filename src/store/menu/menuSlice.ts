@@ -2,13 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface MenuState {
     isOpen: boolean;
-    modalOpen: boolean;
+    infoModalOpen: boolean;
+    backModalOpen: boolean;
     delModalOpen: boolean;
 }
 
 const initialState: MenuState = {
     isOpen: false,
-    modalOpen: false,
+    infoModalOpen: false,
+    backModalOpen: false,
     delModalOpen: false,
 }
 
@@ -19,8 +21,11 @@ const menuSlice = createSlice({
         toggleMenu: (state, action) => {
             state.isOpen = action.payload
         },
-        toggleModal: (state, action) => {
-            state.modalOpen = action.payload
+        toggleInfoModal: (state, action) => {
+            state.infoModalOpen = action.payload
+        },
+        toggleBackModal: (state, action) => {
+            state.backModalOpen = action.payload
         },
         toggleDeleteModal: (state, action) => {
             state.delModalOpen = action.payload
@@ -28,5 +33,5 @@ const menuSlice = createSlice({
     }
 })
 
-export const { toggleMenu, toggleModal, toggleDeleteModal } = menuSlice.actions;
+export const { toggleMenu, toggleInfoModal, toggleBackModal, toggleDeleteModal } = menuSlice.actions;
 export default menuSlice.reducer;

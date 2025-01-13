@@ -16,7 +16,7 @@ import { toggleDeleteModal } from './store/menu/menuSlice' // 액션 가져오�
 function AppContent() {
   const location = useLocation();
   const dispatch = useAppDispatch(); // dispatch를 사용하기 위한 훅
-  const { modalOpen, delModalOpen } = useAppSelector((state) => state.menu);
+  const { infoModalOpen, delModalOpen } = useAppSelector((state) => state.menu);
 
   // 삭제 확인 시 실행할 함수
   const handleDelete = () => {
@@ -38,8 +38,8 @@ function AppContent() {
         <Route path='/save' element={<NoiseList />} />
         <Route path='/' element={<NoiseMap />} />
       </Routes>
-      {location.pathname !== '/login' && <NavBar />}
-      {modalOpen ? <MeasureInfoPopup /> : ''}
+      {location.pathname !== '/login' && location.pathname !== '/register' && <NavBar />}
+      {infoModalOpen ? <MeasureInfoPopup /> : ''}
       {delModalOpen ? (
         <DeleteModal
           isOpen={delModalOpen}
