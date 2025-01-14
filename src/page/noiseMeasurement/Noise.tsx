@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Logo from '../../assets/logo/logo.svg';
 import Info from '../../assets/icons/ico_Info.png';
 import { useDispatch } from 'react-redux';

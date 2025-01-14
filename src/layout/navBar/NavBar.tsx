@@ -1,4 +1,3 @@
-import React from 'react';
 import { ItemBox, NavWrapper } from './NavBar.styles';
 import { NavLink, useMatch } from 'react-router-dom';
 import InactiveSave from '../../assets/icons/ico_save_inactive.svg';

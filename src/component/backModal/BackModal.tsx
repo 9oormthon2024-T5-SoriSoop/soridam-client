@@ -1,4 +1,3 @@
-import React from 'react';
 import { useAppDispatch } from '../../hook/redux';
 import { useNavigate } from 'react-router-dom';
 import { toggleBackModal } from '../../store/menu/menuSlice';
