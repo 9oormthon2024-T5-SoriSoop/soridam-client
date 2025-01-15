@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import LocationSearchBar from "../../component/locationSearchBar/LocationSearchBar";
-import { NoiseMapHeader } from "./NoiseMap.styles";
+import { FilterBtn, NoiseMapHeader } from "./NoiseMap.styles";
 import LocationSuggestion from "../../component/locationSuggestion/LocationSuggestion";
 import axios from "axios";
+import { Suggestion } from "../../types/LocationSearchList";
+import FilterIcon from "../../assets/icons/ico_map_filter@3x.png";
+import useCurrentLocation from "../../hook/useCurrentLocation";
+import { Map, MapMarker } from "react-kakao-maps-sdk";
 
 // interface NoiseData {
 //   id: number;
@@ -16,8 +20,9 @@ import axios from "axios";
 // }
 
 const NoiseMap: React.FC = () => {
+  const { coords, error } = useCurrentLocation(); // 현재 위치 가져오기
   const [searchTerm, setSearchTerm] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState("");
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
@@ -45,11 +50,36 @@ const NoiseMap: React.FC = () => {
     }
   };
 
-  const handleAddressSelect = (address: string, lat: number, lng: number) => {
-    setSelectedAddress(address);
-    setCoordinates({ lat, lng });
-    setSuggestions([]);
-    setSearchTerm("");
+  const handleAddressSelect = (placeName: string, lat: number, lng: number) => {
+    setSelectedAddress(placeName); // 선택한 주소 이름만 설정
+    setCoordinates({ lat, lng }); // 선택한 좌표 설정
+    setSuggestions([]); // 제안 목록 초기화
+    setSearchTerm(placeName); // 검색어를 선택한 주소로 설정
+    setIsFocused(false); // 포커스 해제
+  };
+  
+  const handleFocus = () => {
+    setIsFocused(true);
+    if (searchTerm.trim().length >= 2) {
+      fetchSuggestions(searchTerm); // 검색어가 2자 이상일 때만 호출
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchTerm.trim()) {
+      setSelectedAddress(searchTerm);
+      setSuggestions([]);
+      setIsFocused(false);
+    }
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setIsFocused(false), 200); // 200ms 딜레이 추가 (사용자 경험 개선)
+  };
+  
+  const handleBackIconClick = () => {
+    setSearchTerm(""); // 입력값 초기화
+    setIsFocused(false); // 포커스 해제
   };
   // const [noiseList, setNoiseList] = useState<NoiseData[]>([]);
   // const [loading, setLoading] = useState<boolean>(true);
@@ -212,6 +242,8 @@ const NoiseMap: React.FC = () => {
   // if (loading) return <div>로딩 중...</div>;
   // if (error) return <div>{error}</div>;
 
+  if (error) return <div>{error}</div>; 
+
   return (
     <div>
       {/* 검색바 */}
@@ -219,21 +251,39 @@ const NoiseMap: React.FC = () => {
         <LocationSearchBar
             value={searchTerm}
             onInputChange={handleInputChange}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             isFocused={isFocused}
+            onKeyDown={handleKeyDown}
+            onBackIconClick={handleBackIconClick}
         />
+        {!isFocused && (
+          <FilterBtn>
+            <img src={FilterIcon} alt="filter_icon" />
+            <p>필터</p>
+          </FilterBtn>
+        )}
       </NoiseMapHeader>
-      {isFocused && (
+      {isFocused && suggestions.length > 0 && (
         <div>
           <LocationSuggestion
             suggestions={suggestions}
             onSelect={handleAddressSelect}
+            searchTerm={searchTerm}
           />
         </div>
       )}
-      {/* 선택된 주소 표시 */}
-      {selectedAddress && <p>선택된 주소: {selectedAddress}</p>}
+      {!isFocused && coords && (
+        <Map
+          center={coordinates || { lat: coords.latitude, lng: coords.longitude }}
+          style={{ width: "23.4375rem", height: "37.8125rem" }}
+          level={3}
+        >
+          <MapMarker
+            position={coordinates || { lat: coords.latitude, lng: coords.longitude }}
+          />
+        </Map>
+      )}
     </div>
     // <div style={styles.container}>
     //   <div style={styles.searchBox}>

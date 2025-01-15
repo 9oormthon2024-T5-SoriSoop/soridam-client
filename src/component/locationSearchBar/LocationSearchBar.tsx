@@ -9,6 +9,8 @@ interface SearchBarProps {
     onFocus: () => void;
     onBlur: () => void;
     isFocused: boolean;
+    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void; 
+    onBackIconClick: () => void; // 추가된 prop
 }
 
 const LocationSearchBar: React.FC<SearchBarProps> = ({
@@ -17,6 +19,8 @@ const LocationSearchBar: React.FC<SearchBarProps> = ({
     onFocus,
     onBlur,
     isFocused,
+    onKeyDown,
+    onBackIconClick,
 }) => {
 
     return (
@@ -24,13 +28,16 @@ const LocationSearchBar: React.FC<SearchBarProps> = ({
             <img
                 src={isFocused ? BackIcon : SearchIcon}
                 alt={isFocused ? "back_icon" : "search_icon"}
+                onClick={isFocused ? onBackIconClick : undefined} // 핸들러 연결
             />
             <SearchInput
+                isFocused={isFocused}
                 type="text"
                 value={value}
                 onChange={(e) => onInputChange(e.target.value)}
                 onFocus={onFocus}
                 onBlur={onBlur}
+                onKeyDown={onKeyDown}
                 placeholder="지번, 도로명 주소 검색"
             />
         </SearchBarContainer>
