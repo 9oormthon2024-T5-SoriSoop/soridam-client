@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import LocationSearchBar from "../../component/locationSearchBar/LocationSearchBar";
-import { NoiseMapHeader } from "./NoiseMap.styles";
+import { FilterBtn, NoiseMapHeader } from "./NoiseMap.styles";
 import LocationSuggestion from "../../component/locationSuggestion/LocationSuggestion";
 import axios from "axios";
+import { Suggestion } from "../../types/LocationSearchList";
+import FilterIcon from "../../assets/icons/ico_map_filter@3x.png";
 
 // interface NoiseData {
 //   id: number;
@@ -17,7 +19,7 @@ import axios from "axios";
 
 const NoiseMap: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState("");
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
@@ -49,7 +51,25 @@ const NoiseMap: React.FC = () => {
     setSelectedAddress(address);
     setCoordinates({ lat, lng });
     setSuggestions([]);
-    setSearchTerm("");
+    setSearchTerm(address);
+    setIsFocused(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchTerm.trim()) {
+      setSelectedAddress(searchTerm);
+      setSuggestions([]);
+      setIsFocused(false);
+    }
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setIsFocused(false), 200); // 200ms 딜레이 추가 (사용자 경험 개선)
+  };
+  
+  const handleBackIconClick = () => {
+    setSearchTerm(""); // 입력값 초기화
+    setIsFocused(false); // 포커스 해제
   };
   // const [noiseList, setNoiseList] = useState<NoiseData[]>([]);
   // const [loading, setLoading] = useState<boolean>(true);
@@ -220,15 +240,24 @@ const NoiseMap: React.FC = () => {
             value={searchTerm}
             onInputChange={handleInputChange}
             onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
+            onBlur={handleBlur}
             isFocused={isFocused}
+            onKeyDown={handleKeyDown}
+            onBackIconClick={handleBackIconClick}
         />
+        {!isFocused && (
+          <FilterBtn>
+            <img src={FilterIcon} alt="filter_icon" />
+            <p>필터</p>
+          </FilterBtn>
+        )}
       </NoiseMapHeader>
-      {isFocused && (
+      {isFocused && suggestions.length > 0 && (
         <div>
           <LocationSuggestion
             suggestions={suggestions}
             onSelect={handleAddressSelect}
+            searchTerm={searchTerm}
           />
         </div>
       )}
