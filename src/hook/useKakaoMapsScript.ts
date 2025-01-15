@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const useKakaoMapsScript = (appKey: string, libraries: string[] = []) => {
+const useKakaoMapsScript = (appKey: string, libraries: string[] = []):boolean => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {

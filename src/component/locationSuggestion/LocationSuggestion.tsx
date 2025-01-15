@@ -31,8 +31,10 @@ const LocationSuggestion: React.FC<LocationSuggestionsProps> = ({ suggestions, o
           key={item.id}
           onClick={() => onSelect(item.place_name, parseFloat(item.y), parseFloat(item.x))}
         >
-          {highlightText(item.place_name, searchTerm)} (
-          {highlightText(item.road_address_name || item.address_name, searchTerm)})
+          {highlightText(item.place_name, searchTerm)}{" "}
+          {item.road_address_name
+            ? `(${highlightText(item.road_address_name, searchTerm)})`
+            : `(${highlightText(item.address_name, searchTerm)})`}
         </LocationList>
       ))}
     </LocationListContainer>
