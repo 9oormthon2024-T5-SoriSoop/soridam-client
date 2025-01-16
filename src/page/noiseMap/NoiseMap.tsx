@@ -7,6 +7,7 @@ import { Suggestion } from "../../types/LocationSearchList";
 import FilterIcon from "../../assets/icons/ico_map_filter@3x.png";
 import useCurrentLocation from "../../hook/useCurrentLocation";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
+import FilterBottomSheet from "../../component/filterBottomSheet/FilterBottomSheet";
 
 // interface NoiseData {
 //   id: number;
@@ -26,6 +27,7 @@ const NoiseMap: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState("");
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
   const apiKey = "83ce629a6d7b809e79dc0b269d5a78c9"; // API 키
 
@@ -81,6 +83,15 @@ const NoiseMap: React.FC = () => {
     setSearchTerm(""); // 입력값 초기화
     setIsFocused(false); // 포커스 해제
   };
+
+  const handleFilterClick = () => {
+    setIsBottomSheetOpen(true);
+  };
+
+  const handleCloseBottomSheet = () => {
+    setIsBottomSheetOpen(false);
+  };
+
   // const [noiseList, setNoiseList] = useState<NoiseData[]>([]);
   // const [loading, setLoading] = useState<boolean>(true);
   // const [error, setError] = useState<string | null>(null);
@@ -258,7 +269,7 @@ const NoiseMap: React.FC = () => {
             onBackIconClick={handleBackIconClick}
         />
         {!isFocused && (
-          <FilterBtn>
+          <FilterBtn onClick={handleFilterClick}>
             <img src={FilterIcon} alt="filter_icon" />
             <p>필터</p>
           </FilterBtn>
@@ -284,6 +295,7 @@ const NoiseMap: React.FC = () => {
           />
         </Map>
       )}
+      {isBottomSheetOpen && <FilterBottomSheet onClose={handleCloseBottomSheet} />}
     </div>
     // <div style={styles.container}>
     //   <div style={styles.searchBox}>
