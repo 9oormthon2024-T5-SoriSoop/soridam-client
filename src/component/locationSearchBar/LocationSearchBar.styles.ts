@@ -5,11 +5,11 @@ interface SearchBarContainerProps {
 }
 
 export const SearchBarContainer = styled.div<SearchBarContainerProps>`
-    width: ${({ isFocused }) => (isFocused ? "100%" : "14.375rem")};
+    width: ${({ isFocused }) => (isFocused ? "100%" : "16.25rem")};
     height: ${({ isFocused }) => (isFocused ? "auto" : "2.5rem")};
     display: flex;
     align-items: center;
-    margin: ${({ isFocused }) => (isFocused ? "0" : "0.6875rem 0.8125rem 0.625rem 2.875rem")};
+    margin: ${({ isFocused }) => (isFocused ? "0" : "0.6875rem 0.8125rem 0.625rem 1rem")};
     padding:  ${({ isFocused }) => (isFocused ? "0.375rem 0 0.5625rem 0" : "0.5rem 3.25rem 0.5rem 0.75rem")};
     gap: 0.5rem;
     border-radius: ${({ isFocused }) => (isFocused ? "0" : "6.25rem")};
