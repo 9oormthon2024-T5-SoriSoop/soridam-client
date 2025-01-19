@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ApplyBtn, Background, BottomSheetContainer, BtnContainer, BtnWrapper, CafeIconDescription, CafeIconWrapper, CafeOption, CafeOptionContainer, Category, CategoryOptionContainer, CategoryOptionDescription, CategoryTitle, CloseBtn, Container, CultureIconDescription, CultureIconWrapper, CultureOption, CultureOptionContainer, CutleryIconDescription, CutleryIconWrapper, CutleryOption, CutleryOptionContainer, Default, FarRadiusOption, FarRadiusOptionWrapper, LoudIconDescription, LoudIconWrapper, LoudOption, LoudOptionWrapper, NearRadiusOption, NearRadiusOptionWrapper, NoiseLvOption, NoiseLvOptionContainer, NoiseLvOptionDescription, NoiseLvTitle, NormalIconDescription, NormalIconWrapper, NormalOption, NormalOptionWrapper, NormalRadiusOption, NormalRadiusOptionWrapper, QuietIconDescription, QuietIconWrapper, QuietOption, QuietOptionContainer, QuietOptionWrapper, RadiusOptionContainer, RadiusTitle, ResetBtn, TourIconDescription, TourIconWrapper, TourOption, TourOptionContainer } from './FilterBottomSheet.styles';
 import CloseIcon from '../../assets/icons/ico_round-close@3x.png';
 import CafeIcon from '../../assets/icons/cafe@2x.png';
@@ -14,6 +14,36 @@ interface BottomSheetProps {
 }
 
 const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
+    // 카테고리, 소음 수준, 반경에 대해 각각 선택할 수 있도록 배열로 관리
+    const [selectedOptions, setSelectedOptions] = useState({
+        category: null, // 기본값 'quiet'
+        noiseLevel: 'quiet', // 기본값 'quiet'
+        radius: null // 기본값 'medium'
+    });
+
+    const handleOptionSelect = (type: string, option: string) => {
+        setSelectedOptions(prevState => ({
+            ...prevState,
+            [type]: option
+        }));
+    };
+
+    const getStyles = (type: string, option: string) => {
+        const selectedValue = selectedOptions[type];
+        return selectedValue === option
+            ? {
+                  borderColor: "#007BFF",
+                  bgColor: "#F5F5F5",
+                  textColor: "#0062FF"
+              }
+            : {
+                  borderColor: "#808080",
+                  bgColor: "#FFFFFF",
+                  textColor: "#727272"
+              };
+    };
+
+
     return (
         <Background>
             <BottomSheetContainer>
@@ -26,7 +56,13 @@ const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
                         </CloseBtn>
                     </Category>
                     <CategoryOptionContainer>
-                        <CafeOptionContainer>
+                        <CafeOptionContainer
+                            style={{
+                                borderColor: getStyles("category", "cafe").borderColor,
+                                backgroundColor: getStyles("category", "cafe").bgColor,
+                            }}
+                            onClick={() => handleOptionSelect("category", "cafe")}
+                        >
                             <CafeOption>
                                 <CafeIconWrapper>
                                     <img src={CafeIcon} alt='cafe' />
