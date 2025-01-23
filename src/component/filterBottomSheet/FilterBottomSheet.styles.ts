@@ -74,9 +74,17 @@ export const CategoryOptionContainer = styled.div`
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 2.6875rem;
+    padding-right: 0.75rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    &::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
 `
 
-export const CafeOptionContainer = styled.div`
+export const CafeOptionContainer = styled.div<{ isSelected: boolean }>`
     width: 4.75rem;
     height: 2.5rem;
     padding: 0.625rem 1rem 0.625rem 0.75rem;
@@ -85,8 +93,8 @@ export const CafeOptionContainer = styled.div`
     justify-content: center;
     gap: 0.375rem;
     border-radius: 1.25rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid #808080;
+    background-color: ${({ isSelected }) => (isSelected ? "#F5F5F5" : "#FFFFFF")};
+    border: ${({ isSelected }) => (isSelected ? "0.0625rem solid #007BFF" : "0.0625rem solid #808080")};
 `
 
 export const CafeOption = styled.div`
@@ -106,16 +114,16 @@ export const CafeIconWrapper = styled.div`
     }
 `
 
-export const CafeIconDescription = styled.p`
+export const CafeIconDescription = styled.p<{ isSelected: boolean }>`
     width: 1.5625rem;
     height: 1.25rem;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.25rem;
-    color: #727272;
+    color: ${({ isSelected }) => (isSelected ? "#0062FF" : "#727272")};
 `
 
-export const CutleryOptionContainer = styled.div`
+export const CutleryOptionContainer = styled.div<{ isSelected: boolean }>`
     width: 5.5rem;
     height: 2.5rem;
     padding: 0.625rem 1rem 0.625rem 0.75rem;
@@ -124,8 +132,8 @@ export const CutleryOptionContainer = styled.div`
     justify-content: center;
     gap: 0.375rem;
     border-radius: 1.25rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid #808080;
+    background-color: ${({ isSelected }) => (isSelected ? "#F5F5F5" : "#FFFFFF")};
+    border: ${({ isSelected }) => (isSelected ? "0.0625rem solid #007BFF" : "0.0625rem solid #808080")};
 `
 
 export const CutleryOption = styled.div`
@@ -145,17 +153,17 @@ export const CutleryIconWrapper = styled.div`
     }
 `
 
-export const CutleryIconDescription = styled.p`
+export const CutleryIconDescription = styled.p<{ isSelected: boolean }>`
     width: 2.375rem;
     height: 1.25rem;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.25rem;
     letter-spacing: 0.025rem;
-    color: #727272;
+    color: ${({ isSelected }) => (isSelected ? "#0062FF" : "#727272")};
 `
 
-export const CultureOptionContainer = styled.div`
+export const CultureOptionContainer = styled.div<{ isSelected: boolean }>`
     width: 6.25rem;
     height: 2.5rem;
     padding: 0.625rem 1rem 0.625rem 0.75rem;
@@ -164,8 +172,8 @@ export const CultureOptionContainer = styled.div`
     justify-content: center;
     gap: 0.375rem;
     border-radius: 1.25rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid #808080;
+    background-color: ${({ isSelected }) => (isSelected ? "#F5F5F5" : "#FFFFFF")};
+    border: ${({ isSelected }) => (isSelected ? "0.0625rem solid #007BFF" : "0.0625rem solid #808080")};
 `
 
 export const CultureOption = styled.div`
@@ -185,17 +193,17 @@ export const CultureIconWrapper = styled.div`
     }
 `
 
-export const CultureIconDescription = styled.p`
+export const CultureIconDescription = styled.p<{ isSelected: boolean }>`
     width: 3.125rem;
     height: 1.25rem;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.25rem;
     letter-spacing: 0.025rem;
-    color: #727272;
+    color: ${({ isSelected }) => (isSelected ? "#0062FF" : "#727272")};
 `
 
-export const TourOptionContainer = styled.div`
+export const TourOptionContainer = styled.div<{ isSelected: boolean }>`
     width: 6.25rem;
     height: 2.5rem;
     padding: 0.625rem 1rem 0.625rem 0.75rem;
@@ -204,8 +212,8 @@ export const TourOptionContainer = styled.div`
     justify-content: center;
     gap: 0.375rem;
     border-radius: 1.25rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid #808080;
+    background-color: ${({ isSelected }) => (isSelected ? "#F5F5F5" : "#FFFFFF")};
+    border: ${({ isSelected }) => (isSelected ? "0.0625rem solid #007BFF" : "0.0625rem solid #808080")};
 `
 
 export const TourOption = styled.div`
@@ -225,14 +233,14 @@ export const TourIconWrapper = styled.div`
     }
 `
 
-export const TourIconDescription = styled.p`
+export const TourIconDescription = styled.p<{ isSelected: boolean }>`
     width: 3.125rem;
     height: 1.25rem;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.25rem;
     letter-spacing: 0.025rem;
-    color: #727272;
+    color: ${({ isSelected }) => (isSelected ? "#0062FF" : "#727272")};
 `
 
 export const NoiseLvOption = styled.div`
@@ -278,14 +286,14 @@ export const QuietOptionContainer = styled.div`
     align-items: center;
 `
 
-export const QuietOptionWrapper = styled.div`
+export const QuietOptionWrapper = styled.div<{ isSelected: boolean }>`
     width: 10.125rem;
     height: 2.5rem;
     padding: 0.625rem 1rem 0.625rem 1rem;
     margin-right: 0.5625rem;
     border-radius: 1.25rem;
-    background-color: #F5F5F5;
-    border: 0.0625rem solid #007BFF;
+    background-color: ${({ isSelected }) => (isSelected ? "#F5F5F5" : "#FFFFFF")};
+    border: ${({ isSelected }) => (isSelected ? "0.0625rem solid #007BFF" : "0.0625rem solid #808080")};
 `
 
 export const QuietOption = styled.div`
@@ -306,14 +314,14 @@ export const QuietIconWrapper = styled.div`
     }
 `
 
-export const QuietIconDescription = styled.div`
+export const QuietIconDescription = styled.div<{ isSelected: boolean }>`
     width: 6.5rem;
     height: 1.25rem;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.25rem;
     letter-spacing: 0.025rem;
-    color: #0062FF;
+    color: ${({ isSelected }) => (isSelected ? "#0062FF" : "#727272")};
 `
 
 export const Default = styled.p`
@@ -325,13 +333,13 @@ export const Default = styled.p`
     color: #727272;
 `
 
-export const NormalOptionWrapper = styled.div`
+export const NormalOptionWrapper = styled.div<{ isSelected: boolean }>`
     width: 10.3125rem;
     height: 2.5rem;
     padding: 0.625rem 1rem 0.625rem 1rem;
     border-radius: 1.25rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid #808080;
+    background-color: ${({ isSelected }) => (isSelected ? "#F5F5F5" : "#FFFFFF")};
+    border: ${({ isSelected }) => (isSelected ? "0.0625rem solid #007BFF" : "0.0625rem solid #808080")};
 `
 
 export const NormalOption = styled.div`
@@ -352,23 +360,23 @@ export const NormalIconWrapper = styled.div`
     }    
 `
 
-export const NormalIconDescription = styled.div`
+export const NormalIconDescription = styled.div<{ isSelected: boolean }>`
     width: 6.6875rem;
     height: 1.25rem;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.25rem;
     letter-spacing: 0.025rem;
-    color: #727272;    
+    color: ${({ isSelected }) => (isSelected ? "#0062FF" : "#727272")};   
 `
 
-export const LoudOptionWrapper = styled.div`
+export const LoudOptionWrapper = styled.div<{ isSelected: boolean }>`
     width: 12.3125rem;
     height: 2.5rem;
     padding: 0.625rem 1rem 0.625rem 1rem;
     border-radius: 1.25rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid #808080;
+    background-color: ${({ isSelected }) => (isSelected ? "#F5F5F5" : "#FFFFFF")};
+    border: ${({ isSelected }) => (isSelected ? "0.0625rem solid #007BFF" : "0.0625rem solid #808080")};
 ` 
 
 export const LoudOption = styled.div`
@@ -389,13 +397,13 @@ export const LoudIconWrapper = styled.div`
     }  
 `
 
-export const LoudIconDescription = styled.div`
+export const LoudIconDescription = styled.div<{ isSelected: boolean }>`
     width: 8.6875rem;
     height: 1.25rem;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.25rem;
-    color: #727272; 
+    color: ${({ isSelected }) => (isSelected ? "#0062FF" : "#727272")};
 `
 
 export const RadiusTitle = styled.p`
@@ -418,55 +426,58 @@ export const RadiusOptionContainer = styled.div`
     margin-bottom: 1.25rem;
 `
 
-export const NearRadiusOptionWrapper = styled.div`
+export const NearRadiusOptionWrapper = styled.div<{ isSelected: boolean }>`
     width: 6.1875rem;
     height: 2.5rem;
     padding: 0.625rem 1rem 0.625rem 1rem;
     border-radius: 1.25rem;
-    border: 0.0625rem solid #808080;
+    background-color: ${({ isSelected }) => (isSelected ? "#F5F5F5" : "#FFFFFF")};
+    border: ${({ isSelected }) => (isSelected ? "0.0625rem solid #007BFF" : "0.0625rem solid #808080")};
 `
 
-export const NearRadiusOption = styled.p`
+export const NearRadiusOption = styled.p<{ isSelected: boolean }>`
     width: 4.1875rem;
     height: 1.25rem;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.25rem;
-    color: #727272;
+    color: ${({ isSelected }) => (isSelected ? "#0062FF" : "#727272")};
 `
 
-export const NormalRadiusOptionWrapper = styled.div`
+export const NormalRadiusOptionWrapper = styled.div<{ isSelected: boolean }>`
     width: 5.4375rem;
     height: 2.5rem;
     padding: 0.625rem 1rem 0.625rem 1rem;
     border-radius: 1.25rem;
-    border: 0.0625rem solid #808080;
+    background-color: ${({ isSelected }) => (isSelected ? "#F5F5F5" : "#FFFFFF")};
+    border: ${({ isSelected }) => (isSelected ? "0.0625rem solid #007BFF" : "0.0625rem solid #808080")};
 `
 
-export const NormalRadiusOption = styled.p`
+export const NormalRadiusOption = styled.p<{ isSelected: boolean }>`
     width: 3.4375rem;
     height: 1.25rem;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.25rem;
-    color: #727272;
+    color: ${({ isSelected }) => (isSelected ? "#0062FF" : "#727272")};
 `
 
-export const FarRadiusOptionWrapper = styled.div`
+export const FarRadiusOptionWrapper = styled.div<{ isSelected: boolean }>`
     width: 5.5625rem;
     height: 2.5rem;
     padding: 0.625rem 1rem 0.625rem 1rem;
     border-radius: 1.25rem;
-    border: 0.0625rem solid #808080;
+    background-color: ${({ isSelected }) => (isSelected ? "#F5F5F5" : "#FFFFFF")};
+    border: ${({ isSelected }) => (isSelected ? "0.0625rem solid #007BFF" : "0.0625rem solid #808080")};
 `
 
-export const FarRadiusOption = styled.p`
+export const FarRadiusOption = styled.p<{ isSelected: boolean }>`
     width: 3.5625rem;
     height: 1.25rem;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.25rem;
-    color: #727272;
+    color: ${({ isSelected }) => (isSelected ? "#0062FF" : "#727272")};
 `
 
 export const BtnContainer = styled.div`

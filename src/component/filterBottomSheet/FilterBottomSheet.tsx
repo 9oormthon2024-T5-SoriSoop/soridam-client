@@ -8,6 +8,7 @@ import TourIcon from '../../assets/icons/tour@2x.png';
 import QuietLvIcon from '../../assets/icons/start@3x.png';
 import NormalLvIcon from '../../assets/icons/waypoint@3x.png';
 import LoudLvIcon from '../../assets/icons/end@3x.png';
+import { StyledKey, StyleValue } from '../../types/FilterBottomSheetStyleValue';
 
 interface BottomSheetProps {
     onClose: () => void;
@@ -15,33 +16,21 @@ interface BottomSheetProps {
 
 const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
     // 카테고리, 소음 수준, 반경에 대해 각각 선택할 수 있도록 배열로 관리
-    const [selectedOptions, setSelectedOptions] = useState({
+    const [selectedOptions, setSelectedOptions] = useState<StyleValue>({
         category: null, // 기본값 'quiet'
         noiseLevel: 'quiet', // 기본값 'quiet'
         radius: null // 기본값 'medium'
     });
 
-    const handleOptionSelect = (type: string, option: string) => {
+    const handleOptionSelect = (type: StyledKey, option: string) => {
         setSelectedOptions(prevState => ({
             ...prevState,
             [type]: option
         }));
     };
 
-    const getStyles = (type: string, option: string) => {
-        const selectedValue = selectedOptions[type];
-        return selectedValue === option
-            ? {
-                  borderColor: "#007BFF",
-                  bgColor: "#F5F5F5",
-                  textColor: "#0062FF"
-              }
-            : {
-                  borderColor: "#808080",
-                  bgColor: "#FFFFFF",
-                  textColor: "#727272"
-              };
-    };
+    const isSelected = (type: StyledKey, option: string) =>
+        selectedOptions[type] === option;
 
 
     return (
@@ -57,41 +46,63 @@ const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
                     </Category>
                     <CategoryOptionContainer>
                         <CafeOptionContainer
-                            style={{
-                                borderColor: getStyles("category", "cafe").borderColor,
-                                backgroundColor: getStyles("category", "cafe").bgColor,
-                            }}
-                            onClick={() => handleOptionSelect("category", "cafe")}
+                            isSelected={isSelected('category', 'cafe')}
+                            onClick={() => handleOptionSelect('category', 'cafe')}
                         >
                             <CafeOption>
                                 <CafeIconWrapper>
                                     <img src={CafeIcon} alt='cafe' />
                                 </CafeIconWrapper>
-                                <CafeIconDescription>카페</CafeIconDescription>
+                                <CafeIconDescription
+                                    isSelected={isSelected('category', 'cafe')}
+                                >
+                                    카페
+                                </CafeIconDescription>
                             </CafeOption>
                         </CafeOptionContainer>
-                        <CutleryOptionContainer>
+                        <CutleryOptionContainer
+                            isSelected={isSelected('category', 'cutlery')}
+                            onClick={() => handleOptionSelect('category', 'cutlery')}
+                        >
                             <CutleryOption>
                                 <CutleryIconWrapper>
                                     <img src={CutleryIcon} alt='cutlery' />
                                 </CutleryIconWrapper>
-                                <CutleryIconDescription>음식점</CutleryIconDescription>
+                                <CutleryIconDescription
+                                    isSelected={isSelected('category', 'cutlery')}
+                                >
+                                    음식점
+                                </CutleryIconDescription>
                             </CutleryOption>
                         </CutleryOptionContainer>
-                        <CultureOptionContainer>
+                        <CultureOptionContainer
+                            isSelected={isSelected('category', 'culture')}
+                            onClick={() => handleOptionSelect('category', 'culture')}
+                        >
                             <CultureOption>
                                 <CultureIconWrapper>
                                     <img src={CultureIcon} alt='culture' />
                                 </CultureIconWrapper>
-                                <CultureIconDescription>문화시설</CultureIconDescription>
+                                <CultureIconDescription
+                                    isSelected={isSelected('category', 'culture')}
+                                >
+                                    문화시설
+                                </CultureIconDescription>
                             </CultureOption>
                         </CultureOptionContainer>
-                        <TourOptionContainer>
+                        <TourOptionContainer
+                            isSelected={isSelected('category', 'tour')}
+                            onClick={() => handleOptionSelect('category', 'tour')}
+                        >
                             <TourOption>
                                 <TourIconWrapper>
                                     <img src={TourIcon} alt='tour' />
                                 </TourIconWrapper>
-                                <TourIconDescription>관광명소</TourIconDescription>
+                                <TourIconDescription
+                                    isSelected={isSelected('category', 'tour')}
+                                >
+                                    관광명소
+                                </TourIconDescription>
                             </TourOption>
                         </TourOptionContainer>
                     </CategoryOptionContainer>
@@ -101,47 +112,83 @@ const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
                     </NoiseLvOption>
                     <NoiseLvOptionContainer>
                         <QuietOptionContainer>
-                            <QuietOptionWrapper>
+                            <QuietOptionWrapper
+                                isSelected={isSelected('noiseLevel', 'quiet')}
+                                onClick={() => handleOptionSelect('noiseLevel', 'quiet')}
+                            >
                                 <QuietOption>
                                     <QuietIconWrapper>
                                         <img src={QuietLvIcon} alt='Quiet Level' />
                                     </QuietIconWrapper>
-                                    <QuietIconDescription>0~70dB (조용함)</QuietIconDescription>
+                                    <QuietIconDescription
+                                        isSelected={isSelected('noiseLevel', 'quiet')}
+                                    >
+                                        0~70dB (조용함)
+                                    </QuietIconDescription>
                                 </QuietOption>
                             </QuietOptionWrapper>
                             <Default>기본값</Default>
                         </QuietOptionContainer>
-                        <NormalOptionWrapper>
+                        <NormalOptionWrapper
+                            isSelected={isSelected('noiseLevel', 'normal')}
+                            onClick={() => handleOptionSelect('noiseLevel', 'normal')}
+                        >
                             <NormalOption>
                                 <NormalIconWrapper>
                                     <img src={NormalLvIcon} alt='Normal Level' />
                                 </NormalIconWrapper>
-                                <NormalIconDescription>70~100dB (보통)</NormalIconDescription>
+                                <NormalIconDescription
+                                    isSelected={isSelected('noiseLevel', 'normal')}
+                                >
+                                    70~100dB (보통)
+                                </NormalIconDescription>
                             </NormalOption>
                         </NormalOptionWrapper>
-                        <LoudOptionWrapper>
+                        <LoudOptionWrapper
+                            isSelected={isSelected('noiseLevel', 'loud')}
+                            onClick={() => handleOptionSelect('noiseLevel', 'loud')}
+                        >
                             <LoudOption>
                                 <LoudIconWrapper>
                                     <img src={LoudLvIcon} alt='Normal Level' />
                                 </LoudIconWrapper>
-                                <LoudIconDescription>100~120dB (시끄러움)</LoudIconDescription>
+                                <LoudIconDescription
+                                    isSelected={isSelected('noiseLevel', 'loud')}
+                                >
+                                    100~120dB (시끄러움)
+                                </LoudIconDescription>
                             </LoudOption>
                         </LoudOptionWrapper>
                     </NoiseLvOptionContainer>
                     <RadiusTitle>반경</RadiusTitle>
                     <RadiusOptionContainer>
-                        <NearRadiusOptionWrapper>
-                            <NearRadiusOption>
+                        <NearRadiusOptionWrapper
+                            isSelected={isSelected('radius', '500m')}
+                            onClick={() => handleOptionSelect('radius', '500m')}
+                        >
+                            <NearRadiusOption
+                                isSelected={isSelected('radius', '500m')}
+                            >
                                 500m 이하
                             </NearRadiusOption>
                         </NearRadiusOptionWrapper>
-                        <NormalRadiusOptionWrapper>
-                            <NormalRadiusOption>
+                        <NormalRadiusOptionWrapper
+                            isSelected={isSelected('radius', '1km')}
+                            onClick={() => handleOptionSelect('radius', '1km')}
+                        >
+                            <NormalRadiusOption
+                                isSelected={isSelected('radius', '1km')}
+                            >
                                 1km 이하
                             </NormalRadiusOption>
                         </NormalRadiusOptionWrapper>
-                        <FarRadiusOptionWrapper>
-                            <FarRadiusOption>
+                        <FarRadiusOptionWrapper
+                            isSelected={isSelected('radius', '2km')}
+                            onClick={() => handleOptionSelect('radius', '2km')}
+                        >
+                            <FarRadiusOption
+                                isSelected={isSelected('radius', '2km')}
+                            >
                                 2km 이하    
                             </FarRadiusOption>
                         </FarRadiusOptionWrapper>
