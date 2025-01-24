@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import LocationSearchBar from "../../component/locationSearchBar/LocationSearchBar";
 import { FilterBtn, NoiseMapHeader } from "./NoiseMap.styles";
 import LocationSuggestion from "../../component/locationSuggestion/LocationSuggestion";
@@ -8,17 +8,27 @@ import FilterIcon from "../../assets/icons/ico_map_filter@3x.png";
 import useCurrentLocation from "../../hook/useCurrentLocation";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import FilterBottomSheet from "../../component/filterBottomSheet/FilterBottomSheet";
+import MarkerGreen from '../../assets/icons/ico_marker_quiet_default@2x.png';
+import MarkerBlue from '../../assets/icons/ico_marker_normal_default@2x.png';
+import MarkerRed from '../../assets/icons/ico_marker_loud_default@2x.png';
+import MarkerDefault from '../../assets/icons/ico_marker_default@2x.png';
 
-// interface NoiseData {
-//   id: number;
-//   x: number; // 경도
-//   y: number; // 위도
-//   avgDecibel: number;
-//   maxDecibel: number;
-//   createdAt: string;
-//   review: string;
-//   locationName?: string; // 지역 이름
-// }
+interface NoiseData {
+  id: number;
+  x: number; // 경도
+  y: number; // 위도
+  avgDecibel: number;
+  maxDecibel: number;
+  createdAt: string;
+  review: string;
+  locationName?: string; // 지역 이름
+}
+
+const API_BASE_URL = "https://f4cc-27-119-100-172.ngrok-free.app/api";
+const AUTH_HEADER = {
+  Authorization: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJubmluam9fb24iLCJpYXQiOjE3MzczNzc4MjcsImV4cCI6MTczNzM3OTYyNywic3ViIjoiZWYxNDQyOTMtMWE2Zi00YjJlLWJkOTgtOWE5MWZmYmQ2NWQ2Iiwicm9sZSI6IlVTRVIifQ.Uoemp6tdFZp7_zp6xSUnYFBhXE1EoMD8JVKbdh6OMXc", // 여기에 실제 토큰 값을 넣으세요.
+  "ngrok-skip-browser-warning": "69420",
+};
 
 const NoiseMap: React.FC = () => {
   const { coords, error } = useCurrentLocation(); // 현재 위치 가져오기
@@ -28,6 +38,60 @@ const NoiseMap: React.FC = () => {
   const [selectedAddress, setSelectedAddress] = useState("");
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [noiseList, setNoiseList] = useState<NoiseData[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchNoiseData = async () => {
+      if (!coords) return; // 좌표가 없으면 API 호출 안 함
+    
+      try {
+        setLoading(true);
+        console.log("Requesting noise data with:", {
+          x: coords.longitude, // 경도
+          y: coords.latitude,  // 위도
+        });
+        
+        const response = await axios.get(`${API_BASE_URL}/noises`, {
+          headers: AUTH_HEADER,
+          params: {
+            x: coords.longitude, // Check if "longitude" and "latitude" are correct parameter names
+            y: coords.latitude,  
+          },
+        });
+        
+        setNoiseList(response.data.noises); // 응답에서 noises 배열을 받음
+      } catch (err) {
+        setFetchError("데이터를 가져오는데 실패했습니다.");
+        console.error("Error fetching noise data:", err); // Detailed error log
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNoiseData();
+  }, [coords]); // coords가 바뀔 때마다 데이터 호출
+
+  const getMarkerImage = () => {
+    if (!coords || !noiseList) return MarkerDefault;
+
+    const matchedNoise = noiseList.find(
+      (noise) =>
+        Math.abs(noise.x - coords.longitude) < 0.0001 &&
+        Math.abs(noise.y - coords.latitude) < 0.0001
+    );
+
+    if (!matchedNoise) return MarkerDefault;
+
+    const { avgDecibel } = matchedNoise;
+
+    if (avgDecibel >= 0 && avgDecibel < 70) return MarkerGreen;
+    if (avgDecibel >= 70 && avgDecibel < 100) return MarkerBlue;
+    if (avgDecibel >= 100 && avgDecibel <= 120) return MarkerRed;
+
+    return MarkerDefault;
+  };
 
   const apiKey = "83ce629a6d7b809e79dc0b269d5a78c9"; // API 키
 
@@ -102,43 +166,6 @@ const NoiseMap: React.FC = () => {
 
   // const JAVASCRIPT_KEY = "474943ecc6f14c17466a22ee39f0c57f"; // Kakao JavaScript 키
 
-  // const styles = {
-  //   container: {
-  //     padding: "16px",
-  //   },
-  //   searchBox: {
-  //     display: "flex",
-  //     justifyContent: "space-between",
-  //     alignItems: "center",
-  //     padding: "10px",
-  //     backgroundColor: "#fff",
-  //     border: "1px solid #ccc",
-  //     borderRadius: "8px",
-  //     marginBottom: "16px",
-  //   },
-  //   searchInput: {
-  //     flex: 1,
-  //     padding: "8px",
-  //     fontSize: "14px",
-  //     border: "1px solid #ccc",
-  //     borderRadius: "8px",
-  //     marginRight: "8px",
-  //   },
-  //   filterButton: {
-  //     padding: "8px 12px",
-  //     backgroundColor: "#f0f0f0",
-  //     border: "1px solid #ccc",
-  //     borderRadius: "8px",
-  //     cursor: "pointer",
-  //   },
-  //   map: {
-  //     width: "100%", // 가로 크기 375px
-  //     height: "600px", // 세로 크기 812px
-  //     border: "1px solid #ccc",
-  //     borderRadius: "8px",
-  //     margin: "0 auto", // 가운데 정렬
-  //   },
-  // };
 
   // let map: any; // Kakao Map 객체를 저장할 변수
 
@@ -292,6 +319,7 @@ const NoiseMap: React.FC = () => {
         >
           <MapMarker
             position={coordinates || { lat: coords.latitude, lng: coords.longitude }}
+            image={{ src: getMarkerImage(), size: { width: 32, height: 32 } }}
           />
         </Map>
       )}

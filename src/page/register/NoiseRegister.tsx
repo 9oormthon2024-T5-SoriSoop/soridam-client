@@ -27,7 +27,7 @@ const NoiseRegister = () => {
   const { fixedDate } = useAppSelector((state: RootState) => state.dateTime);
   // 날짜와 시간 포맷을 가져오는 훅 사용
   const { formattedDate, formattedTime } = useFormattedDateTime(fixedDate);
-  const API_BASE_URL = "https://63c2-59-18-161-28.ngrok-free.app/api";
+  const API_BASE_URL = "https://f4cc-27-119-100-172.ngrok-free.app/api";
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -67,14 +67,23 @@ const NoiseRegister = () => {
     const data = {
       x: latitude,
       y: longitude,
-      avgDecibel: averageDecibel.toFixed(2),
-      maxDecibel: maxDecibel.toFixed(2),
+      avgDecibel: averageDecibel.toFixed(0),
+      maxDecibel: maxDecibel.toFixed(0),
       review: value,
     };
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/noises`, data);
+      const response = await axios.post(
+        `${API_BASE_URL}/noises`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJubmluam9fb24iLCJpYXQiOjE3MzczNzc4MjcsImV4cCI6MTczNzM3OTYyNywic3ViIjoiZWYxNDQyOTMtMWE2Zi00YjJlLWJkOTgtOWE5MWZmYmQ2NWQ2Iiwicm9sZSI6IlVTRVIifQ.Uoemp6tdFZp7_zp6xSUnYFBhXE1EoMD8JVKbdh6OMXc`,
+          },
+        }
+      );
       console.log('Response:', response.data);
+  
 
       // Toast 성공 메시지 표시
       toast.success(
@@ -155,11 +164,11 @@ const NoiseRegister = () => {
           <NoiseResultWrapper>
             <DecibelWrapper>
               <p>평균</p>
-              <p>{averageDecibel.toFixed(2)}</p>
+              <p>{averageDecibel.toFixed(0)}</p>
             </DecibelWrapper>
             <DecibelWrapper>
               <p>최대</p>
-              <p>{maxDecibel.toFixed(2)}</p>
+              <p>{maxDecibel.toFixed(0)}</p>
             </DecibelWrapper>
           </NoiseResultWrapper>
           <CommentTitle>한줄평</CommentTitle>
