@@ -15,27 +15,64 @@ interface BottomSheetProps {
 }
 
 const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
-    // 카테고리, 소음 수준, 반경에 대해 각각 선택할 수 있도록 배열로 관리
-    const [selectedOptions, setSelectedOptions] = useState<StyleValue>({
-        category: null, // 기본값 'quiet'
-        noiseLevel: 'quiet', // 기본값 'quiet'
-        radius: null // 기본값 'medium'
-    });
-
-    const handleOptionSelect = (type: StyledKey, option: string) => {
-        setSelectedOptions(prevState => ({
-            ...prevState,
-            [type]: option
-        }));
+    const initialState: StyleValue = {
+        category: [], // 초기값: 선택 없음
+        noiseLevel: ['quiet'], // 초기값: 'quiet'
+        radius: null, // 초기값: 선택 없음
     };
 
-    const isSelected = (type: StyledKey, option: string) =>
-        selectedOptions[type] === option;
+    const [selectedOptions, setSelectedOptions] = useState<StyleValue>(initialState);
 
+    const handleOptionSelect = (type: StyledKey, option: string) => {
+        setSelectedOptions((prevState) => {
+          if (type === 'radius') {
+            // 반경은 단일 선택
+            return { ...prevState, [type]: option };
+          }
+    
+          const currentSelection = prevState[type] as string[];
+          if (currentSelection.includes(option)) {
+            // 이미 선택된 옵션이면 제거
+            return {
+              ...prevState,
+              [type]: currentSelection.filter((item) => item !== option),
+            };
+          }
+    
+          // 새로운 옵션 추가
+          return {
+            ...prevState,
+            [type]: [...currentSelection, option],
+          };
+        });
+    };
+
+    const isSelected = (type: StyledKey, option: string): boolean => {
+        if (type === 'radius') {
+          return selectedOptions[type] === option;
+        }
+        return (selectedOptions[type] as string[]).includes(option);
+    };
+
+    const handleReset = () => {
+        setSelectedOptions(initialState); // 상태를 초기값으로 재설정
+    };
+
+    // Animation variants for Framer Motion
+    const bottomSheetVariants = {
+        hidden: { y: "100%", opacity: 0 }, // Start position (off-screen)
+        visible: { y: "0%", opacity: 1, transition: { type: "spring", stiffness: 50 } }, // Slide up
+        exit: { y: "100%", opacity: 0, transition: { duration: 0.3 } }, // Slide down
+    };
 
     return (
         <Background>
-            <BottomSheetContainer>
+            <BottomSheetContainer
+                variants={bottomSheetVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+            >
                 <Container>
                     <Category>
                         <CategoryTitle>카테고리를 골라주세요.</CategoryTitle>
@@ -196,7 +233,7 @@ const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
                 </Container>
                 <BtnContainer>
                     <BtnWrapper>
-                        <ResetBtn>초기화</ResetBtn>
+                        <ResetBtn onClick={handleReset}>초기화</ResetBtn>
                         <ApplyBtn>적용</ApplyBtn>
                     </BtnWrapper>
                 </BtnContainer>

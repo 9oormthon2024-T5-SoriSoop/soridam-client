@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import styled from "styled-components";
 
 export const Background = styled.div`
@@ -10,7 +11,10 @@ export const Background = styled.div`
     z-index: 1;
 `
 
-export const BottomSheetContainer = styled.div`
+export const BottomSheetContainer = styled(motion.div)`
+    position: fixed;
+    bottom: 0;
+    left: 0;
     width: 23.4375rem;
     height: 40.3125rem;
     border-top-right-radius: 0.5rem;
