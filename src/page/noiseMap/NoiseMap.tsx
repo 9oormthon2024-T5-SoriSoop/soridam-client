@@ -12,6 +12,7 @@ import MarkerGreen from '../../assets/icons/ico_marker_quiet_default@2x.png';
 import MarkerBlue from '../../assets/icons/ico_marker_normal_default@2x.png';
 import MarkerRed from '../../assets/icons/ico_marker_loud_default@2x.png';
 import MarkerDefault from '../../assets/icons/ico_marker_default@2x.png';
+import { AnimatePresence } from "framer-motion";
 
 interface NoiseData {
   id: number;
@@ -153,7 +154,8 @@ const NoiseMap: React.FC = () => {
   };
 
   const handleCloseBottomSheet = () => {
-    setIsBottomSheetOpen(false);
+    // 닫기 애니메이션이 완료된 후 상태를 업데이트
+    setTimeout(() => setIsBottomSheetOpen(false), 300); // exit 애니메이션 지속 시간과 동일
   };
 
   // const [noiseList, setNoiseList] = useState<NoiseData[]>([]);
@@ -323,7 +325,9 @@ const NoiseMap: React.FC = () => {
           />
         </Map>
       )}
-      {isBottomSheetOpen && <FilterBottomSheet onClose={handleCloseBottomSheet} />}
+      <AnimatePresence>
+        {isBottomSheetOpen && <FilterBottomSheet onClose={handleCloseBottomSheet} />}
+      </AnimatePresence>
     </div>
     // <div style={styles.container}>
     //   <div style={styles.searchBox}>

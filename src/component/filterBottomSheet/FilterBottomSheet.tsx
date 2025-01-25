@@ -9,6 +9,7 @@ import QuietLvIcon from '../../assets/icons/start@3x.png';
 import NormalLvIcon from '../../assets/icons/waypoint@3x.png';
 import LoudLvIcon from '../../assets/icons/end@3x.png';
 import { StyledKey, StyleValue } from '../../types/FilterBottomSheetStyleValue';
+import { PanInfo } from 'framer-motion';
 
 interface BottomSheetProps {
     onClose: () => void;
@@ -62,7 +63,18 @@ const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
     const bottomSheetVariants = {
         hidden: { y: "100%", opacity: 0 }, // Start position (off-screen)
         visible: { y: "0%", opacity: 1, transition: { type: "spring", stiffness: 50 } }, // Slide up
-        exit: { y: "100%", opacity: 0, transition: { duration: 0.3 } }, // Slide down
+        exit: { y: "100%", opacity: 0, transition: { duration: 0.5 } }, // Slide down
+    };
+
+    const handleDragEnd = (
+        _event: MouseEvent | TouchEvent | PointerEvent, // 정확한 이벤트 타입
+        info: PanInfo // Framer Motion에서 제공하는 PanInfo 타입
+    ) => {
+        const dragDistance = info.offset.y;
+        const dragThreshold = window.innerHeight * 0.4; // 40% 이상 내려갔을 때
+        if (dragDistance > dragThreshold) {
+          onClose(); // 닫기
+        }
     };
 
     return (
@@ -72,6 +84,9 @@ const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
+                drag="y"
+                dragConstraints={{ top: 0, bottom: 0 }}
+                onDragEnd={handleDragEnd}
             >
                 <Container>
                     <Category>
