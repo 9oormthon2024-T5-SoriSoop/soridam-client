@@ -13,9 +13,12 @@ import { PanInfo } from 'framer-motion';
 
 interface BottomSheetProps {
     onClose: () => void;
+    setIsClosing: React.Dispatch<React.SetStateAction<boolean>>;
+    isClosing: boolean;
+    handleCategoryKeyword: (categoryKeyword: string[], radius: string | null) => void
 }
 
-const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
+const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose, setIsClosing, isClosing, handleCategoryKeyword }) => {
     const initialState: StyleValue = {
         category: [], // 초기값: 선택 없음
         noiseLevel: ['quiet'], // 초기값: 'quiet'
@@ -39,7 +42,6 @@ const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
               [type]: currentSelection.filter((item) => item !== option),
             };
           }
-    
           // 새로운 옵션 추가
           return {
             ...prevState,
@@ -67,24 +69,33 @@ const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
     };
 
     const handleDragEnd = (
-        _event: MouseEvent | TouchEvent | PointerEvent, // 정확한 이벤트 타입
-        info: PanInfo // Framer Motion에서 제공하는 PanInfo 타입
+        _event: MouseEvent | TouchEvent | PointerEvent,
+        info: PanInfo
     ) => {
         const dragDistance = info.offset.y;
-        const dragThreshold = window.innerHeight * 0.4; // 40% 이상 내려갔을 때
+        const dragThreshold = window.innerHeight * 0.4; // 40% 이상 내려가면 닫힘 처리
+
         if (dragDistance > dragThreshold) {
-          onClose(); // 닫기
+            setIsClosing(true); // 닫기 애니메이션 활성화
+            setTimeout(onClose, 400); // 닫기 애니메이션 이후 컴포넌트 제거
         }
     };
+
+    const onApply = (selectedOptions: StyleValue) => {
+        handleCategoryKeyword(selectedOptions.category, selectedOptions.radius);
+        setIsClosing(true); // 닫기 애니메이션 활성화
+        setTimeout(onClose, 400); // 닫기 애니메이션 이후 컴포넌트 제거
+    }
 
     return (
         <Background>
             <BottomSheetContainer
                 variants={bottomSheetVariants}
                 initial="hidden"
-                animate="visible"
+                animate={isClosing ? "closing" : "visible"} // 상태에 따라 애니메이션
                 exit="exit"
                 drag="y"
+                dragElastic={0.3} // 드래그 저항 조정
                 dragConstraints={{ top: 0, bottom: 0 }}
                 onDragEnd={handleDragEnd}
             >
@@ -249,7 +260,7 @@ const FilterBottomSheet: React.FC<BottomSheetProps> = ({ onClose }) => {
                 <BtnContainer>
                     <BtnWrapper>
                         <ResetBtn onClick={handleReset}>초기화</ResetBtn>
-                        <ApplyBtn>적용</ApplyBtn>
+                        <ApplyBtn onClick={() => onApply(selectedOptions)}>적용</ApplyBtn>
                     </BtnWrapper>
                 </BtnContainer>
             </BottomSheetContainer>

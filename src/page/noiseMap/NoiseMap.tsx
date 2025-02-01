@@ -13,6 +13,7 @@ import MarkerBlue from '../../assets/icons/ico_marker_normal_default@2x.png';
 import MarkerRed from '../../assets/icons/ico_marker_loud_default@2x.png';
 import MarkerDefault from '../../assets/icons/ico_marker_default@2x.png';
 import { AnimatePresence } from "framer-motion";
+import { CategoryCode } from "../../types/CategoryCode";
 
 interface NoiseData {
   id: number;
@@ -23,6 +24,14 @@ interface NoiseData {
   createdAt: string;
   review: string;
   locationName?: string; // 지역 이름
+}
+
+// 카테고리를 통한 여러 MapMarker를 뿌리기 위한 정보 type
+interface PlaceData {
+  id: string;
+  place_name: string;
+  x: number; // 경도
+  y: number; // 위도
 }
 
 const API_BASE_URL = "https://f4cc-27-119-100-172.ngrok-free.app/api";
@@ -42,6 +51,10 @@ const NoiseMap: React.FC = () => {
   const [noiseList, setNoiseList] = useState<NoiseData[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [isClosing, setIsClosing] = useState<boolean>(false); // 닫힘 애니메이션 상태
+  const [category, setCategory] = useState<CategoryCode[]>([]);  // 카테고리를 받아와 맵검색을 위한 특정 키워드로 변경
+  const [mapLv, setMapLv] = useState<number>(3); // map의 주변 범위 Lv 설정
+  const [mapMarkers, setMapMarkers] = useState<PlaceData[]>([]);
 
   useEffect(() => {
     const fetchNoiseData = async () => {
@@ -150,6 +163,7 @@ const NoiseMap: React.FC = () => {
   };
 
   const handleFilterClick = () => {
+    setIsClosing(false);
     setIsBottomSheetOpen(true);
   };
 
@@ -157,6 +171,75 @@ const NoiseMap: React.FC = () => {
     // 닫기 애니메이션이 완료된 후 상태를 업데이트
     setTimeout(() => setIsBottomSheetOpen(false), 300); // exit 애니메이션 지속 시간과 동일
   };
+
+  // 선택된 카테고리를 map에 적용시킬 키워드로 변환시키고, map Lv 설정정
+  const handleCategoryKeyword = (categoryKeyword: string[], radius: string | null) => {
+    console.log("📌 전달받은 categoryKeyword:", categoryKeyword);
+    if(categoryKeyword.length !== 0 ) {
+      const allCategory: CategoryCode[] = [];
+      for (let i = 0; i < categoryKeyword.length; i++) {
+        if (categoryKeyword[i] === "cafe") {
+          allCategory.push("CE7");  
+        } else if (categoryKeyword[i] === "cutlery") {
+          allCategory.push("FD6");
+        } else if (categoryKeyword[i] === "culture") {
+          allCategory.push("CT1");
+        } else if (categoryKeyword[i] === "tour") {
+          allCategory.push("AT4");
+        }
+      }
+      console.log("✅ 변환된 카테고리 코드:", allCategory);
+      setCategory(allCategory);
+    } 
+    if (radius === "500m") setMapLv(6);
+    else if (radius === "1km") setMapLv(7);
+    else if (radius === "2km") setMapLv(8);
+    else setMapLv(3); // 기본값
+  }
+
+  useEffect(() => {
+    if (!coords || category.length === 0 || !window.kakao) return;
+  
+    const { kakao } = window;
+    const ps = new kakao.maps.services.Places();
+    
+    const searchCategory = async () => {
+      const allMarkers: PlaceData[] = [];
+      
+      await Promise.all(
+        category.map((catCode) => {
+          return new Promise<void>((resolve) => {
+            ps.categorySearch(
+              catCode,
+              (data, status) => {
+                if (status === kakao.maps.services.Status.OK) {
+                  const newMarkers = data.map((place) => ({
+                    id: place.id,
+                    place_name: place.place_name,
+                    x: Number(place.x),
+                    y: Number(place.y),
+                  }));
+                  allMarkers.push(...newMarkers);
+                }
+                resolve(); // 비동기 호출 완료
+              },
+              { location: new kakao.maps.LatLng(coords.latitude, coords.longitude) }
+            );
+          });
+        })
+      );
+  
+      setMapMarkers(allMarkers); // 모든 검색 완료 후 상태 업데이트
+    };
+  
+    searchCategory();
+  }, [coords, category]);
+  
+  // const handleFilterApply = (selectedCategory: string, selectedRadius: number) => {
+  //   setCategoryOption(selectedCategory);
+  //   setRadiusOption(selectedRadius);
+  //   setIsBottomSheetOpen(false);
+  // };
 
   // const [noiseList, setNoiseList] = useState<NoiseData[]>([]);
   // const [loading, setLoading] = useState<boolean>(true);
@@ -317,8 +400,15 @@ const NoiseMap: React.FC = () => {
         <Map
           center={coordinates || { lat: coords.latitude, lng: coords.longitude }}
           style={{ width: "23.4375rem", height: "37.8125rem" }}
-          level={3}
+          level={mapLv}
         >
+          {mapMarkers.map((marker) => (
+            <MapMarker
+              key={marker.id}
+              image={{ src: MarkerDefault, size: { width: 32, height: 32 } }}
+              position={{ lat: marker.y, lng: marker.x }}
+            />
+          ))}
           <MapMarker
             position={coordinates || { lat: coords.latitude, lng: coords.longitude }}
             image={{ src: getMarkerImage(), size: { width: 32, height: 32 } }}
@@ -326,7 +416,7 @@ const NoiseMap: React.FC = () => {
         </Map>
       )}
       <AnimatePresence>
-        {isBottomSheetOpen && <FilterBottomSheet onClose={handleCloseBottomSheet} />}
+        {isBottomSheetOpen && <FilterBottomSheet onClose={handleCloseBottomSheet} setIsClosing={setIsClosing} isClosing={isClosing} handleCategoryKeyword={handleCategoryKeyword} />}
       </AnimatePresence>
     </div>
     // <div style={styles.container}>
