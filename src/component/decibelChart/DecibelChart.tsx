@@ -62,7 +62,10 @@ const DecibelChart: React.FC<DecibelMeterProps> = ({
         plugins: {
             legend: {
                 display: false, // 범례 표시 여부
-            }
+            },
+            datalabels: {
+                display: false,  // 데이터 레이블 표시 안함
+            },
         }
     };
 

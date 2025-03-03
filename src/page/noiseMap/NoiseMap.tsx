@@ -14,6 +14,7 @@ import MarkerRed from '../../assets/icons/ico_marker_loud_default@2x.png';
 import MarkerDefault from '../../assets/icons/ico_marker_default@2x.png';
 import { AnimatePresence } from "framer-motion";
 import { CategoryCode } from "../../types/CategoryCode";
+import LocationDetailBottomSheet from "../../component/locationDetailBottomSheet/LocationDetailBottomSheet";
 
 interface NoiseData {
   id: number;
@@ -47,15 +48,23 @@ const NoiseMap: React.FC = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState("");
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isFilterBottomSheetOpen, setIsFilterBottomSheetOpen] = useState(false);
   const [noiseList, setNoiseList] = useState<NoiseData[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isClosing, setIsClosing] = useState<boolean>(false); // 닫힘 애니메이션 상태
   const [category, setCategory] = useState<CategoryCode[]>([]);  // 카테고리를 받아와 맵검색을 위한 특정 키워드로 변경
   const [mapLv, setMapLv] = useState<number>(3); // map의 주변 범위 Lv 설정
-  const [mapMarkers, setMapMarkers] = useState<PlaceData[]>([]);
+  const [mapMarkers, setMapMarkers] = useState<PlaceData[]>([]); // 필터 적용시 마커 클러스터
+  const [isLocationBSOpen, setIsLocationBSOpen] = useState<boolean>(false); // 마커 클릭 이벤트 관리
+  const [selectedMarker, setSelectedMarker] = useState<NoiseData | null>(null); // 선택된 마커 데이터
 
+  //marker: NoiseData (매개변수 noiseData)
+  const handleMarkerClick = () => {
+    // setSelectedMarker(marker); // 선택된 마커 정보 저장
+    setIsLocationBSOpen(true); // bottom sheet 열기
+  };
+  
   useEffect(() => {
     const fetchNoiseData = async () => {
       if (!coords) return; // 좌표가 없으면 API 호출 안 함
@@ -164,12 +173,12 @@ const NoiseMap: React.FC = () => {
 
   const handleFilterClick = () => {
     setIsClosing(false);
-    setIsBottomSheetOpen(true);
+    setIsFilterBottomSheetOpen(true);
   };
 
   const handleCloseBottomSheet = () => {
     // 닫기 애니메이션이 완료된 후 상태를 업데이트
-    setTimeout(() => setIsBottomSheetOpen(false), 300); // exit 애니메이션 지속 시간과 동일
+    setTimeout(() => setIsFilterBottomSheetOpen(false), 300); // exit 애니메이션 지속 시간과 동일
   };
 
   // 선택된 카테고리를 map에 적용시킬 키워드로 변환시키고, map Lv 설정정
@@ -234,136 +243,6 @@ const NoiseMap: React.FC = () => {
   
     searchCategory();
   }, [coords, category]);
-  
-  // const handleFilterApply = (selectedCategory: string, selectedRadius: number) => {
-  //   setCategoryOption(selectedCategory);
-  //   setRadiusOption(selectedRadius);
-  //   setIsBottomSheetOpen(false);
-  // };
-
-  // const [noiseList, setNoiseList] = useState<NoiseData[]>([]);
-  // const [loading, setLoading] = useState<boolean>(true);
-  // const [error, setError] = useState<string | null>(null);
-  // const [currentPosition, setCurrentPosition] = useState({
-  //   latitude: 37.5665, // 기본 위치 (서울)
-  //   longitude: 126.9780,
-  // });
-
-  // const JAVASCRIPT_KEY = "474943ecc6f14c17466a22ee39f0c57f"; // Kakao JavaScript 키
-
-
-  // let map: any; // Kakao Map 객체를 저장할 변수
-
-  // // Geolocation으로 현재 위치 가져오기
-  // useEffect(() => {
-  //   navigator.geolocation.getCurrentPosition(
-  //     (position) => {
-  //       const { latitude, longitude } = position.coords;
-  //       setCurrentPosition({ latitude, longitude }); // 현재 위치 저장
-  //     },
-  //     (error) => {
-  //       console.error("현재 위치를 가져오는 중 오류 발생:", error);
-  //       alert("현재 위치를 가져올 수 없습니다. 기본 위치(서울)로 표시합니다.");
-  //     }
-  //   );
-  // }, []);
-
-  // // Noise 데이터 가져오기
-  // useEffect(() => {
-  //   const fetchNoiseData = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const response = await ApiService.getUserNoises(1); // 사용자 ID 1로 데이터 가져오기
-  //       setNoiseList(response.data.responses); // Noise 데이터를 상태에 저장
-  //     } catch (err) {
-  //       setError("데이터를 가져오는데 실패했습니다.");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchNoiseData();
-  // }, []);
-
-  // // Kakao 지도 로드
-  // useEffect(() => {
-  //   const loadKakaoMap = () => {
-  //     const { kakao } = window as any;
-
-  //     const container = document.getElementById("map");
-  //     const options = {
-  //       center: new kakao.maps.LatLng(currentPosition.latitude, currentPosition.longitude),
-  //       level: 3,
-  //     };
-
-  //     map = new kakao.maps.Map(container, options);
-
-  //     // 현재 위치를 네이버 지도처럼 파란색 중심 원과 하얀 테두리로 표시
-  //     new kakao.maps.Circle({
-  //       center: new kakao.maps.LatLng(currentPosition.latitude, currentPosition.longitude),
-  //       radius: 12, // 하얀 테두리의 바깥 원 크기
-  //       strokeWeight: 2, // 하얀 테두리 두께
-  //       strokeColor: "#FFFFFF", // 하얀 테두리 색깔
-  //       strokeOpacity: 1, // 완전 불투명
-  //       fillColor: "#FFFFFF", // 하얀색 내부 채우기
-  //       fillOpacity: 1, // 완전 불투명
-  //       map: map, // 표시할 지도 객체
-  //     });
-
-  //     // 중심의 파란 원
-  //     new kakao.maps.Circle({
-  //       center: new kakao.maps.LatLng(currentPosition.latitude, currentPosition.longitude),
-  //       radius: 8, // 파란색 중심 원 크기
-  //       strokeWeight: 3, // 테두리 두께 없음
-  //       fillColor: "#0066FF", // 진한 파란색
-  //       fillOpacity: 1, // 완전 불투명
-  //       map: map, // 표시할 지도 객체
-  //     });
-
-  //     // Noise 데이터를 지도에 아이콘으로만 표시
-  //     noiseList.forEach((noise) => {
-  //       const markerImage = getMarkerImage(noise.avgDecibel); // 마커 이미지 설정
-  //       new kakao.maps.Marker({
-  //         map: map,
-  //         position: new kakao.maps.LatLng(noise.y, noise.x),
-  //         image: markerImage, // 지정한 아이콘
-  //       });
-  //     });
-  //   };
-
-  //   const getMarkerImage = (avgDecibel: number) => {
-  //     let imageUrl = "";
-  //     if (avgDecibel <= 70) {
-  //       imageUrl = "/src/assets/icons/ico_marker_green.png";
-  //     } else if (avgDecibel <= 100) {
-  //       imageUrl = "/src/assets/icons/ico_marker_blue.png";
-  //     } else {
-  //       imageUrl = "/src/assets/icons/ico_marker_red.png";
-  //     }
-  //     const imageSize = new kakao.maps.Size(24, 35); // 마커 이미지 크기 설정
-  //     return new kakao.maps.MarkerImage(imageUrl, imageSize);
-  //   };
-
-  //   const script = document.createElement("script");
-  //   script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${JAVASCRIPT_KEY}&libraries=services`;
-  //   script.async = true;
-
-  //   script.onload = () => loadKakaoMap();
-  //   document.body.appendChild(script);
-
-  //   return () => {
-  //     document.body.removeChild(script);
-  //   };
-  // }, [noiseList]);
-
-  // useEffect(() => {
-  //   if (map) {
-  //     map.setCenter(new kakao.maps.LatLng(currentPosition.latitude, currentPosition.longitude));
-  //   }
-  // }, [currentPosition]);
-
-  // if (loading) return <div>로딩 중...</div>;
-  // if (error) return <div>{error}</div>;
 
   if (error) return <div>{error}</div>; 
 
@@ -407,32 +286,29 @@ const NoiseMap: React.FC = () => {
               key={marker.id}
               image={{ src: MarkerDefault, size: { width: 32, height: 32 } }}
               position={{ lat: marker.y, lng: marker.x }}
+              clickable={true} // 마커를 클릭했을 때 지도의 클릭 이벤트가 발생하지 않도록 설정합니다
+              onClick={() => handleMarkerClick()} // 클릭 이벤트 추가
             />
           ))}
           <MapMarker
             position={coordinates || { lat: coords.latitude, lng: coords.longitude }}
             image={{ src: getMarkerImage(), size: { width: 32, height: 32 } }}
+            clickable={true} // 마커를 클릭했을 때 지도의 클릭 이벤트가 발생하지 않도록 설정합니다
+            onClick={() => handleMarkerClick()} // 클릭 이벤트 추가
           />
         </Map>
       )}
       <AnimatePresence>
-        {isBottomSheetOpen && <FilterBottomSheet onClose={handleCloseBottomSheet} setIsClosing={setIsClosing} isClosing={isClosing} handleCategoryKeyword={handleCategoryKeyword} />}
+        {isFilterBottomSheetOpen && <FilterBottomSheet onClose={handleCloseBottomSheet} setIsClosing={setIsClosing} isClosing={isClosing} handleCategoryKeyword={handleCategoryKeyword} />}
       </AnimatePresence>
+      {isLocationBSOpen && (
+        <LocationDetailBottomSheet 
+          isOpen={isLocationBSOpen} 
+          onClose={() => setIsLocationBSOpen(false)}
+          // data={selectedMarker} // 선택된 마커 정보 전달
+        />
+      )}
     </div>
-    // <div style={styles.container}>
-    //   <div style={styles.searchBox}>
-    //     <input
-    //       id="searchInput"
-    //       type="text"
-    //       placeholder="지번, 도로명 주소 검색"
-    //       style={styles.searchInput}
-    //     />
-    //     <button id="searchButton" style={styles.filterButton}>
-    //       검색
-    //     </button>
-    //   </div>
-    //   <div id="map" style={styles.map}></div>
-    // </div>
   );
 };
 
