@@ -54,10 +54,11 @@ const NoiseMap: React.FC = () => {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isClosing, setIsClosing] = useState<boolean>(false); // 닫힘 애니메이션 상태
   const [category, setCategory] = useState<CategoryCode[]>([]);  // 카테고리를 받아와 맵검색을 위한 특정 키워드로 변경
-  const [mapLv, setMapLv] = useState<number>(3); // map의 주변 범위 Lv 설정
+  const [mapLv, setMapLv] = useState<number>(6); // map의 주변 범위 Lv 설정
   const [mapMarkers, setMapMarkers] = useState<PlaceData[]>([]); // 필터 적용시 마커 클러스터
   const [isLocationBSOpen, setIsLocationBSOpen] = useState<boolean>(false); // 마커 클릭 이벤트 관리
   const [selectedMarker, setSelectedMarker] = useState<NoiseData | null>(null); // 선택된 마커 데이터
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number } | null>(null); // 검색 기준 변경을 위한 MapCenter 설정
 
   //marker: NoiseData (매개변수 noiseData)
   const handleMarkerClick = () => {
@@ -203,11 +204,14 @@ const NoiseMap: React.FC = () => {
     if (radius === "500m") setMapLv(6);
     else if (radius === "1km") setMapLv(7);
     else if (radius === "2km") setMapLv(8);
-    else setMapLv(3); // 기본값
+    else setMapLv(6); // 기본값
+
+    // ✅ 필터 적용 시 강제 중심 좌표 업데이트하여 마커 재렌더링 유도
+    setMapCenter((prev) => prev ? { ...prev } : null);
   }
 
   useEffect(() => {
-    if (!coords || category.length === 0 || !window.kakao) return;
+    if (!mapCenter || category.length === 0 || !window.kakao) return;
   
     const { kakao } = window;
     const ps = new kakao.maps.services.Places();
@@ -232,7 +236,7 @@ const NoiseMap: React.FC = () => {
                 }
                 resolve(); // 비동기 호출 완료
               },
-              { location: new kakao.maps.LatLng(coords.latitude, coords.longitude) }
+              { location: new kakao.maps.LatLng(mapCenter.lat, mapCenter.lng) }
             );
           });
         })
@@ -242,7 +246,7 @@ const NoiseMap: React.FC = () => {
     };
   
     searchCategory();
-  }, [coords, category]);
+  }, [mapCenter, category]);
 
   if (error) return <div>{error}</div>; 
 
@@ -280,6 +284,10 @@ const NoiseMap: React.FC = () => {
           center={coordinates || { lat: coords.latitude, lng: coords.longitude }}
           style={{ width: "23.4375rem", height: "37.8125rem" }}
           level={mapLv}
+          onCenterChanged={(map) => {
+            const center = map.getCenter();
+            setMapCenter({ lat: center.getLat(), lng: center.getLng() });
+          }}
         >
           {mapMarkers.map((marker) => (
             <MapMarker
@@ -300,14 +308,14 @@ const NoiseMap: React.FC = () => {
       )}
       <AnimatePresence>
         {isFilterBottomSheetOpen && <FilterBottomSheet onClose={handleCloseBottomSheet} setIsClosing={setIsClosing} isClosing={isClosing} handleCategoryKeyword={handleCategoryKeyword} />}
+        {isLocationBSOpen && (
+          <LocationDetailBottomSheet 
+            isOpen={isLocationBSOpen} 
+            onClose={() => setIsLocationBSOpen(false)}
+            // data={selectedMarker} // 선택된 마커 정보 전달
+          />
+        )}
       </AnimatePresence>
-      {isLocationBSOpen && (
-        <LocationDetailBottomSheet 
-          isOpen={isLocationBSOpen} 
-          onClose={() => setIsLocationBSOpen(false)}
-          // data={selectedMarker} // 선택된 마커 정보 전달
-        />
-      )}
     </div>
   );
 };

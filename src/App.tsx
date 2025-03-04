@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import './App.css'
 import { Fragment } from 'react'
 import Login from './page/login/Login'
@@ -11,6 +11,7 @@ import { useAppSelector, useAppDispatch } from './hook/redux'
 import NoiseMap from './page/noiseMap/NoiseMap'
 import DeleteModal from './component/deleteModal/DeleteModal'
 import { toggleDeleteModal } from './store/menu/menuSlice' // 액션 가져오기
+import ErrorPage from './page/error/ErrorPage'
 
 
 function AppContent() {
@@ -37,8 +38,14 @@ function AppContent() {
         <Route path='/register' element={<NoiseRegister />} />
         <Route path='/save' element={<NoiseList />} />
         <Route path='/' element={<NoiseMap />} />
+        <Route path='/404' element={<ErrorPage />} />
+        <Route path='/*' element={<Navigate to={"/404"} />} />
       </Routes>
-      {location.pathname !== '/login' && location.pathname !== '/register' && <NavBar />}
+      {
+        location.pathname !== '/login' 
+        && location.pathname !== '/register' 
+        && location.pathname !== '/404'
+        && <NavBar />}
       {infoModalOpen ? <MeasureInfoPopup /> : ''}
       {delModalOpen ? (
         <DeleteModal

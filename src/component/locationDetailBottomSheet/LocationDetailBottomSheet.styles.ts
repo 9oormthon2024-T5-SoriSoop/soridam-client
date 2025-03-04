@@ -168,7 +168,7 @@ export const ReviewList = styled.ul`
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     gap: 0.75rem;
 `
@@ -183,4 +183,8 @@ export const Review = styled.li`
     font-size: 1rem;
     line-height: 1.5rem;
     color: #060606;
+
+    &:last-child { 
+        margin-bottom: 6.25rem; 
+    }
 `
