@@ -248,6 +248,7 @@ const NoiseMap: React.FC = () => {
     searchCategory();
   }, [mapCenter, category]);
 
+
   if (error) return <div>{error}</div>; 
 
   return (
