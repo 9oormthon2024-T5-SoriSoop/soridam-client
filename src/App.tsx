@@ -35,11 +35,11 @@ function AppContent() {
     <Fragment>
       <Routes>
         <Route path='/login' element={<Login />} />
-        <Route path='/measure' element={<Noise />} />
+        <Route path='/' element={<Noise />} />
         <Route path='/register' element={<NoiseRegister />} />
         <Route path='/save' element={<NoiseList />} />
         <Route path='/save/detail' element={<NoiseDetail />} />
-        <Route path='/' element={<NoiseMap />} />
+        <Route path='/map' element={<NoiseMap />} />
         <Route path='/404' element={<ErrorPage />} />
         <Route path='/*' element={<Navigate to={"/404"} />} />
       </Routes>

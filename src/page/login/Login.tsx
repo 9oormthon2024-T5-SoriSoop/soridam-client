@@ -4,22 +4,36 @@ import styled from "styled-components";
 import emailIcon from "../../assets/icons/ico_login_email.png";
 import passwordIcon from "../../assets/icons/ico_login_password.png";
 import { NavLink } from "react-router-dom";
+import Logo from "../../assets/logo/logo.svg"
+import { Container, Icon, InputContainer, InputWrapper, LogoContainer, LogoTextWrapper, LogoWrapper } from "./Login.styles";
 
 const Login = () => {
   return (
     <Container>
       <LogoContainer>
-        <Logo />
+        <LogoWrapper>
+          <img src={Logo} alt="logo" />
+        </LogoWrapper>
+        <LogoTextWrapper>
+          <p>나만의 소음 데이터, </p>
+          <p>로그인하고 저장하세요!</p>
+        </LogoTextWrapper>
       </LogoContainer>
       <Form>
-        <InputWrapper>
-            <Icon src={emailIcon} alt="이메일 아이콘" />
-            <Input type="text" placeholder="ID" />
-        </InputWrapper>
-        <InputWrapper>
-            <Icon src={passwordIcon} alt="비밀번호 아이콘" />
-            <Input type="password" placeholder="password" />
-        </InputWrapper>
+        <InputContainer>
+          <InputWrapper>
+              <Icon>
+                <img src={emailIcon} alt="이메일 아이콘" /> 
+              </Icon>
+              <Input type="text" placeholder="ID" />
+          </InputWrapper>
+          <InputWrapper>
+              <Icon>
+                <img src={passwordIcon} alt="비밀번호 아이콘" />
+              </Icon>
+              <Input type="password" placeholder="password" />
+          </InputWrapper>
+        </InputContainer>
         <NavLink to={'/measure'}>
           <LoginButton>로그인</LoginButton>
         </NavLink>
@@ -37,34 +51,8 @@ const Login = () => {
 
 export default Login;
 
-// Styled Components
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  padding: 0 20px;
-  background-color: #ffffff;
-`;
 
-const LogoContainer = styled.div`
-  margin-bottom: 40px;
-`;
 
-const Logo = styled.div`
-  width: 120px;
-  height: 60px;
-  background-color: #eaeaea;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  color: #666666;
-  font-weight: bold;
-  text-align: center;
-  border-radius: 8px;
-`;
 
 const Form = styled.div`
   width: 100%;
@@ -73,21 +61,9 @@ const Form = styled.div`
   flex-direction: column;
 `;
 
-const InputWrapper = styled.div`
-  display: flex; /* 가로 정렬 */
-  align-items: center; /* 세로 정렬 */
-  background-color: #f7f7f7; /* 배경색 추가 */
-  border: none; /* 테두리 제거 */
-  border-radius: 8px;
-  padding: 10px; /* 내부 여백 */
-  margin-bottom: 20px;
-`;
 
-const Icon = styled.img`
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-`;
+
+
 
 const Input = styled.input`
   flex: 1;

@@ -13,7 +13,7 @@ const ErrorPage = () => {
                 불편을 드려 죄송합니다.<br/> 
                 요청하신 페이지를 찾을 수 없어요.
             </ErrorInfo>
-            <Link to='/measure'>
+            <Link to='/'>
                 <ErrorPageBtn>
                     측정 페이지로 돌아가기
                 </ErrorPageBtn>
