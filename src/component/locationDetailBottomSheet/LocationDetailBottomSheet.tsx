@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from "framer-motion"; // ✨ AnimatePresence 추가
 import { BackBtn, Background, BottomSheet, CurrentDateTimeContainer, CurrentDateWrapper, CurrentTimeWrapper, Header, Location, LocationInfoContainer, LocationInfoWrapper, LocationNoieInfoWrapper, MenuTitle, NoiseInfo, NoiseInfoImg, Review, ReviewContainer, ReviewList, ReviewTitle } from './LocationDetailBottomSheet.styles';
 import MarkerGreen from '../../assets/icons/ico_marker_quiet_default@2x.png';
 import useFormattedDateTime from '../../hook/useFormattedDateTime';
@@ -24,20 +25,35 @@ const LocationDetailBottomSheet = ({ isOpen, onClose }: BottomSheetProps) => {
     const sheetVariants = {
         collapsed: { height: 414 },
         expanded: { height: 712 },
+        exit: { y: "100%", opacity: 0, transition: { duration: 0.3 } }, // ⬇️ 아래로 슬라이드하면서 사라짐
     };
   
     return (
         <Background isOpen={isOpen} onClick={onClose}>
             <BottomSheet
+                as={motion.div} // ✨ motion.div로 변환
                 initial="collapsed"
                 animate={isExpanded ? "expanded" : "collapsed"}
+                exit="exit" // ⬇️ isOpen이 false가 될 때 exit 애니메이션 적용
                 variants={sheetVariants}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 drag="y"
                 dragConstraints={{ top: 0, bottom: 0 }}
                 onDragEnd={(_, info) => {
-                    if (info.offset.y < -50) setIsExpanded(true);
-                    else setIsExpanded(false);
+                    const dragOffset = info.offset.y;
+                    
+                    // 1. 드래그 방향이 아래쪽이고, 일정 거리 이상 움직이면 닫기
+                    if (dragOffset > 100) {
+                        onClose();
+                        return;
+                    }
+                    
+                    // 2. -50px 이상 위로 드래그하면 확장, 그렇지 않으면 축소
+                    if (dragOffset < -50) {
+                        setIsExpanded(true);
+                    } else {
+                        setIsExpanded(false);
+                    }
                 }}
             >
                 {isExpanded && (

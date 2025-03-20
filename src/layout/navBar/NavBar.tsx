@@ -12,8 +12,8 @@ import { toggleMenu } from '../../store/menu/menuSlice';
 const NavBar = () => {
     const dispatch = useDispatch();
 
-    const isMapActive = useMatch("/");
-    const isMeasureActive = useMatch("/measure");
+    const isMapActive = useMatch("/map");
+    const isMeasureActive = useMatch("/");
     const isSaveActive = useMatch("/save");
 
     const handleMenuClick = (menu: string) => {
@@ -31,7 +31,7 @@ const NavBar = () => {
             <ItemBox>
             <li onClick={() => handleMenuClick("measure")}>
                     <NavLink 
-                        to={"/measure"} 
+                        to={"/"} 
                         className={({ isActive }) => isActive ? "active-item" : "inactive-item"}
                     >
                         <div>
@@ -44,7 +44,7 @@ const NavBar = () => {
                 </li>
                 <li onClick={() => handleMenuClick("map")}>
                     <NavLink 
-                        to={"/"} 
+                        to={"/map"} 
                         className={({ isActive }) => isActive ? "active-item" : "inactive-item"}
                     >
                         <div>

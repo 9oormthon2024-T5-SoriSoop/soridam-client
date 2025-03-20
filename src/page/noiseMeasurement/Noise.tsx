@@ -38,7 +38,7 @@ const Noise = () => {
 
     const { isRecording, fixedDate } = useAppSelector((state: RootState) => state.dateTime);
     const { maxDecibel, averageDecibel } = useAppSelector((state: RootState) => state.noise);
-    useResetStateOnPath('/measure');
+    useResetStateOnPath('/');
 
     useEffect(() => {
       if (!isRecording) {
@@ -156,7 +156,7 @@ const Noise = () => {
     useEffect(() => {
       // 측정 중이 아니라면 /measure로 리다이렉트
       if (!maxDecibel && !averageDecibel) {
-        navigate('/measure');
+        navigate('/');
       }
     }, [maxDecibel, averageDecibel, navigate]);
 
